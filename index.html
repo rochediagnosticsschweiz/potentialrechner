@@ -1,517 +1,1557 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Labor-Potenzial-Rechner</title>
-    <!-- Tailwind CSS für einfaches, sauberes Styling -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Nordic Typografie: Inter -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                    },
-                    colors: {
-                        roche: '#0066CC', // Offizielles Roche Blau
-                        brand: {
-                            xdark: '#7D0096',   // Headlines & primäre Icons
-                            dark: '#BC36F0',    // Haupt-Grafikelemente & Pfeile
-                            main: '#E085FC',    // Highlights
-                            light: '#F2D4FF',   // Sekundäre Boxen
-                            xlight: '#FAEEFF',  // Hintergrund für „Key Takeaway“-Boxen
-                        },
-                        nordic: {
-                            bg: '#F9FAFB',
-                            card: '#FFFFFF',
-                            textPrimary: '#111827',
-                            textSecondary: '#6B7280',
-                            accent: '#475569',
-                        }
-                    }
-                }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Labor-Potenzial-Rechner</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Inter', 'sans-serif'] },
+          colors: {
+            roche: '#0066CC',
+            brand: {
+              xdark: '#7D0096',
+              dark: '#BC36F0',
+              main: '#E085FC',
+              light: '#F2D4FF',
+              xlight: '#FAEEFF'
+            },
+            nordic: {
+              bg: '#F9FAFB',
+              card: '#FFFFFF',
+              textPrimary: '#111827',
+              textSecondary: '#6B7280'
             }
+          },
+          boxShadow: {
+            soft: '0 10px 30px rgba(17,24,39,0.08)'
+          }
         }
-    </script>
-    <style>
-        body {
-            background-color: #F9FAFB;
-            color: #111827;
-            -webkit-font-smoothing: antialiased;
-        }
-        .fade-in {
-            animation: fadeIn 0.5s ease-out forwards;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(8px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
-    </style>
+      }
+    }
+  </script>
+  <style>
+    body {
+      background: #F9FAFB;
+      color: #111827;
+      font-family: Inter, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      position: relative;
+    }
+    .fade-in { animation: fadeIn .35s ease-out forwards; }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .option-active {
+      border-color: #BC36F0;
+      background: #FAEEFF;
+      color: #7D0096;
+      box-shadow: 0 0 0 3px rgba(188,54,240,0.12);
+    }
+
+    /* Responsive hardening: prevent text / controls from overflowing containers */
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      max-width: 100%;
+      overflow-x: hidden;
+    }
+
+    #app {
+      width: 100%;
+    }
+
+    h1, h2, h3, h4, p, span, li, button, label, input, textarea {
+      overflow-wrap: normal;
+      word-break: normal;
+      hyphens: auto;
+    }
+
+    h1 {
+      font-size: clamp(2rem, 5.8vw, 3.75rem);
+      line-height: 1.08;
+    }
+
+    h2 {
+      font-size: clamp(1.75rem, 4.2vw, 3rem);
+      line-height: 1.12;
+    }
+
+    h3 {
+      font-size: clamp(1.15rem, 2.6vw, 1.5rem);
+      line-height: 1.22;
+    }
+
+    h4 {
+      font-size: clamp(1rem, 2.2vw, 1.125rem);
+      line-height: 1.28;
+    }
+
+    p, li, button, label, input, textarea {
+      font-size: clamp(0.875rem, 1.4vw, 1rem);
+      line-height: 1.55;
+    }
+
+    button {
+      max-width: 100%;
+      white-space: normal;
+      text-wrap: balance;
+    }
+
+    img, svg {
+      max-width: 100%;
+    }
+
+    @media (max-width: 640px) {
+      body {
+        font-size: 15px;
+      }
+
+      main#app {
+        padding-left: 1rem;
+        padding-right: 1rem;
+        padding-top: 5.5rem;
+      }
+
+      .shadow-soft {
+        box-shadow: 0 6px 18px rgba(17,24,39,0.07);
+      }
+
+      h1 {
+        font-size: clamp(1.85rem, 8.5vw, 2.75rem) !important;
+        line-height: 1.08 !important;
+      }
+
+      h2 {
+        font-size: clamp(1.55rem, 7vw, 2.25rem) !important;
+        line-height: 1.12 !important;
+      }
+
+      .rounded-\[28px\] {
+        border-radius: 1.25rem !important;
+      }
+    }
+
+
+    .text-balance {
+      text-wrap: balance;
+    }
+
+    .text-pretty {
+      text-wrap: pretty;
+    }
+
+    .min-w-0 {
+      min-width: 0;
+    }
+
+    .overflow-safe {
+      overflow: hidden;
+    }
+
+    @media (max-width: 420px) {
+      p, li, button, label, input, textarea {
+        font-size: 0.875rem !important;
+      }
+
+      .tracking-\[0\.2em\] {
+        letter-spacing: 0.12em !important;
+      }
+    }
+
+
+    .radar-label {
+      font-size: clamp(10px, 2.4vw, 12px);
+      line-height: 1.15;
+      color: #7D0096;
+      font-weight: 600;
+      text-align: center;
+      hyphens: auto;
+      overflow-wrap: normal;
+      word-break: normal;
+    }
+
+    @media (max-width: 420px) {
+      .radar-label {
+        font-size: 10px;
+      }
+    }
+
+    @media print {
+      body {
+        background: white;
+      }
+
+      #contact-modal,
+      button {
+        display: none !important;
+      }
+
+      main#app {
+        max-width: 100% !important;
+        padding: 0 !important;
+      }
+
+      .shadow-soft,
+      .shadow-md,
+      .shadow-sm {
+        box-shadow: none !important;
+      }
+    }
+
+  </style>
 </head>
-<body class="min-h-screen flex flex-col font-sans relative">
+<body class="min-h-screen">
+  <div class="absolute top-4 right-4 md:top-8 md:right-10 z-40 max-w-[38vw]">
+    <img onclick="restartQuiz()" style="cursor:pointer" src="https://upload.wikimedia.org/wikipedia/commons/f/f5/Hoffmann-La_Roche_logo.svg" alt="Roche Logo" class="h-8 sm:h-10 md:h-12 w-auto drop-shadow-sm" />
+  </div>
 
-    <!-- Roche Logo (Oben Rechts) -->
-    <div class="absolute top-6 right-6 md:top-8 md:right-10 z-40">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/f/f5/Hoffmann-La_Roche_logo.svg" alt="Roche Logo" class="h-10 md:h-12 w-auto drop-shadow-sm">
-    </div>
+  <main id="app" class="max-w-6xl mx-auto px-4 md:px-8 py-8 md:py-12"></main>
 
-    <!-- Container für die App -->
-    <div id="app" class="flex-grow flex flex-col items-center p-6 md:p-12 w-full max-w-5xl mx-auto transition-all duration-300">
-        <!-- Content wird durch JS injiziert -->
-    </div>
-
-    <!-- Kontakt-Modal -->
-    <div id="contact-modal" class="fixed inset-0 bg-black/40 z-50 hidden flex items-center justify-center p-4 opacity-0 transition-opacity duration-300">
-        <div id="contact-modal-content" class="bg-white rounded-lg p-8 max-w-md w-full shadow-2xl transform scale-95 transition-transform duration-300 relative">
-            <h3 class="text-2xl font-light text-brand-xdark mb-2">Beratung anfragen</h3>
-            <p class="text-sm text-nordic-textSecondary mb-6 leading-relaxed">Bitte hinterlassen Sie Ihre Angaben. Wir bereiten Ihre Auswertung auf und melden uns bei Ihnen.</p>
-            
-            <form id="contact-form" onsubmit="submitForm(event)">
-                <div class="space-y-4">
-                    <div>
-                        <label class="block text-xs font-medium text-gray-700 mb-1">Name / Vorname *</label>
-                        <input type="text" id="contact-name" required class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-brand-dark focus:ring-1 focus:ring-brand-dark text-sm transition-colors">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-medium text-gray-700 mb-1">E-Mail Adresse *</label>
-                        <input type="email" id="contact-email" required class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-brand-dark focus:ring-1 focus:ring-brand-dark text-sm transition-colors">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-medium text-gray-700 mb-1">Labor / Organisation *</label>
-                        <input type="text" id="contact-org" required class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-brand-dark focus:ring-1 focus:ring-brand-dark text-sm transition-colors">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-medium text-gray-700 mb-1">Bemerkung (Optional)</label>
-                        <textarea id="contact-message" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-brand-dark focus:ring-1 focus:ring-brand-dark text-sm transition-colors resize-none"></textarea>
-                    </div>
-                </div>
-                
-                <div class="mt-8 flex justify-end gap-3">
-                    <button type="button" onclick="closeModal()" class="px-5 py-2.5 text-sm text-gray-500 hover:text-brand-xdark transition-colors font-medium">Abbrechen</button>
-                    <!-- Der Senden-Button bleibt im Roche Blau für die Marken-Wiedererkennung beim Absenden -->
-                    <button type="submit" class="px-5 py-2.5 bg-roche text-white text-sm font-medium rounded hover:bg-blue-800 transition-colors shadow-sm">Anfrage senden</button>
-                </div>
-            </form>
+  <div id="contact-modal" class="fixed inset-0 bg-black/40 hidden items-center justify-center p-4 z-50">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full p-6 md:p-8 max-h-[92vh] overflow-y-auto">
+      <div class="flex items-start justify-between gap-4 mb-6">
+        <div class="min-w-0">
+          <h3 id="modal-title" class="text-2xl font-semibold text-brand-xdark leading-tight">Beratung anfragen</h3>
+          <p id="modal-intro" class="text-sm text-nordic-textSecondary mt-1 leading-relaxed">
+            Bitte hinterlassen Sie Ihre Angaben. Wir bereiten Ihre Anfrage anhand Ihrer Auswertung vor.
+          </p>
         </div>
+        <button onclick="closeModal()" class="shrink-0 text-gray-400 hover:text-brand-xdark text-xl leading-none" aria-label="Schließen">×</button>
+      </div>
+
+      <form id="contact-form" class="space-y-4" onsubmit="submitForm(event)">
+        <div>
+          <label id="name-label" for="contact-name" class="block text-sm font-medium mb-1">Name / Vorname *</label>
+          <input id="contact-name" required class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-brand-main" />
+        </div>
+
+        <div>
+          <label id="email-label" for="contact-email" class="block text-sm font-medium mb-1">E-Mail Adresse *</label>
+          <input id="contact-email" type="email" required class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-brand-main" />
+        </div>
+
+        <div>
+          <label id="org-label" for="contact-org" class="block text-sm font-medium mb-1">Labor / Organisation *</label>
+          <input id="contact-org" required class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-brand-main" />
+        </div>
+
+        <div>
+          <label id="note-label" for="contact-message" class="block text-sm font-medium mb-1">Bemerkung (Optional)</label>
+          <textarea id="contact-message" rows="4" class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-brand-main"></textarea>
+        </div>
+
+        <div class="rounded-xl bg-gray-50 border border-gray-100 p-4">
+          <label for="privacy-consent" class="grid grid-cols-[auto_1fr] gap-3 text-sm text-nordic-textPrimary leading-relaxed">
+            <input
+              id="privacy-consent"
+              type="checkbox"
+              class="mt-1 h-4 w-4 rounded border-gray-300 text-roche focus:ring-roche"
+              onchange="toggleSubmitButton()"
+              required
+            />
+            <span class="min-w-0 text-pretty">
+              <span id="privacy-before">Ich habe die</span>
+              <a
+                id="privacy-link"
+                href="https://www.roche.ch/datenschutzerklaerung/datenschutzerklaerung-roche-diagnostics"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="text-brand-xdark underline hover:text-brand-dark"
+              >Datenschutzbestimmungen</a>
+              <span id="privacy-after">gelesen und akzeptiere und erlaube dem Unternehmen Roche Diagnostics (Schweiz) AG mich bezüglich meiner Anfrage zu kontaktieren.</span>
+            </span>
+          </label>
+        </div>
+
+        <div class="flex flex-col-reverse sm:flex-row sm:justify-end gap-3 pt-2">
+          <button type="button" onclick="closeModal()" class="px-5 py-3 rounded-xl border border-gray-200 text-sm font-medium hover:bg-gray-50">
+            Abbrechen
+          </button>
+          <button id="submit-request-button" type="submit" disabled class="px-5 py-3 rounded-xl bg-roche text-white text-sm font-medium hover:bg-blue-800 disabled:opacity-40 disabled:cursor-not-allowed">
+            Anfrage senden
+          </button>
+        </div>
+      </form>
     </div>
+  </div>
 
-    <script>
-        // --- ICONS (SVG Strings) ---
-        const icons = {
-            activity: `<svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13h2l2 3 2-6 1 3h3" /></svg>`,
-            settings: `<svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>`,
-            laptop: `<svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 17.25v1.007a3 3 0 01-.879 2.122L7.5 21h9l-.621-.621A3 3 0 0115 18.257V17.25m6-12V15a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 15V5.25m18 0A2.25 2.25 0 0018.75 3H5.25A2.25 2.25 0 003 5.25m18 0V12a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 12V5.25" /></svg>`,
-            users: `<svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" /></svg>`,
-            barChart: `<svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" /></svg>`,
-            clipboard: `<svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25zM6.75 12h.008v.008H6.75V12zm0 3h.008v.008H6.75V15zm0 3h.008v.008H6.75V18z" /></svg>`,
-            check: `<svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" /></svg>`,
-            arrowRight: `<svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" /></svg>`
-        };
+  <script>
+    const icons = {
+      // Basis-Icons
 
-        // --- DATEN ---
-        const questions = [
-            { category: "Prozesse & Workflow", icon: icons.activity, text: "Die Sortierung und Verteilung der Proben im Probeneingang erfolgt händisch durch Mitarbeitende." },
-            { category: "Prozesse & Workflow", icon: icons.activity, text: "Eine Steigerung des Probenvolumens um 20% erfordert im aktuellen Setup eine proportionale Aufstockung des Personals." },
-            { category: "Prozesse & Workflow", icon: icons.settings, text: "Die räumliche Anordnung der Analysegeräte resultiert aus historischen Gegebenheiten und bildet nicht den aktuellen Probenfluss ab." },
-            { category: "Prozesse & Workflow", icon: icons.settings, text: "Der Versand von Spezialanalytik an externe Partnerlabore erfordert eine manuelle Datenerfassung oder Umetikettierung der Proben." },
-            { category: "Digitalisierung & IT", icon: icons.laptop, text: "Die technische Validierung der Routine-Ergebnisse im Normbereich erfolgt überwiegend manuell durch das Fachpersonal." },
-            { category: "Digitalisierung & IT", icon: icons.laptop, text: "Die verwendeten Subsysteme (z. B. Mikrobiologie) arbeiten als separate Datenbereiche ohne vollständige Integration in das LIS." },
-            { category: "Digitalisierung & IT", icon: icons.laptop, text: "Die Erfassung von Aufträgen erfolgt teilweise papierbasiert oder erfordert eine manuelle Übertragung in das LIS." },
-            { category: "Organisation & Führung", icon: icons.users, text: "Die Mitarbeitenden sind festen Arbeitsplätzen zugeordnet und rotieren selten bereichsübergreifend." },
-            { category: "Organisation & Führung", icon: icons.barChart, text: "Die Überwachung der Durchlaufzeiten (TAT) basiert auf manuellen Stichproben statt auf Echtzeit-Dashboards." },
-            { category: "Organisation & Führung", icon: icons.clipboard, text: "Die Bestandsverwaltung von Reagenzien wird durch visuelle Kontrolle und manuelle Nachbestellung gesteuert." }
-        ];
+      activity: '<svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.7"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13h2l2 3 2-6 1 3h3" /></svg>',
+      settings: '<svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.7"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>',
+      laptop: '<svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.7"><path stroke-linecap="round" stroke-linejoin="round" d="M9 17.25v1.007a3 3 0 01-.879 2.122L7.5 21h9l-.621-.621A3 3 0 0115 18.257V17.25m6-12V15a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 15V5.25m18 0A2.25 2.25 0 0018.75 3H5.25A2.25 2.25 0 003 5.25" /></svg>',
+      users: '<svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.7"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0z" /></svg>',
+      chart: '<svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.7"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" /></svg>',
+      clipboard: '<svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.7"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25" /></svg>',
+      check: '<svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" /></svg>',
+      arrowRight: '<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" /></svg>',
+      arrowLeft: '<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" /></svg>'
+    };
 
-        // --- STATE ---
-        let state = {
-            step: 'start', // 'start', 'quiz', 'loading', 'result'
-            currentQ: 0,
-            answers: {}
-        };
+    const clusterIcons = {
+      Logistik: icons.clipboard,
+      Organisation: icons.users,
+      Digitalisierung: icons.laptop,
+      Prozesse: icons.activity
+    };
 
-        // --- LOGIK & DOM MANIPULATION ---
-        const appDiv = document.getElementById('app');
+    const answerScale = [
+      { labelKey: 0, value: 3 },
+      { labelKey: 1, value: 2 },
+      { labelKey: 2, value: 1 }
+    ];
 
-        function render() {
-            if (state.step === 'start') renderStart();
-            else if (state.step === 'quiz') renderQuiz();
-            else if (state.step === 'loading') renderLoading();
-            else if (state.step === 'result') renderResults();
+    
+    const localizedQuestions = {
+      de: [
+        'Die Proben treffen so im Labor ein, dass sie ohne manuelle Nachbearbeitung direkt in die Präanalytik gegeben werden können.',
+        'Eine Steigerung des Probenvolumens um 50% erfordert im aktuellen Setup eine proportionale Aufstockung des Personals.',
+        'Die räumliche Anordnung der Analysegeräte ist optimal an den aktuellen Probenfluss angepasst.',
+        'Der Versand an externe Partnerlabore erfordert eine manuelle Datenerfassung oder Umetikettierung der Proben.',
+        'Die technische Validierung der Routine-Ergebnisse im Normbereich läuft weitgehend regelbasiert und automatisiert ab.',
+        'Die Mitarbeitenden sind festen Arbeitsplätzen zugeordnet und rotieren selten bereichsübergreifend.',
+        'Die Verordnung erfolgt durchgehend digital und ohne manuelle Übertragungsschritte.',
+        'Einzelne Geräte arbeiten als separate Datenbereiche ohne vollständige Integration in das LIS.',
+        'Die Überwachung der Durchlaufzeiten erfolgt über Echtzeit-Dashboards.',
+        'Die Bestandsverwaltung von Reagenzien wird durch visuelle Kontrolle und manuelle Nachbestellung gesteuert.'
+      ],
+      en: [
+        'Samples arrive at the laboratory in a way that allows direct transfer to preanalytics without manual relabeling.',
+        'A 50% increase in sample volume would require a proportional increase in staffing.',
+        'The spatial arrangement of analyzers is optimally aligned with the current sample flow.',
+        'Shipping to external partner laboratories requires manual data entry or relabeling.',
+        'Technical validation of routine results is largely rule-based and automated.',
+        'Employees are assigned to fixed workplaces and rarely rotate across departments.',
+        'Ordering is fully digital and without manual transfer steps.',
+        'Individual devices operate as separate data areas without full LIS integration.',
+        'Turnaround times are monitored via real-time dashboards.',
+        'Reagent inventory management is controlled through visual checks and manual reordering.'
+      ],
+      fr: [
+        'Les échantillons arrivent au laboratoire sans nécessiter de retraitement manuel avant la préanalytique.',
+        'Une augmentation de 50% du volume d’échantillons nécessiterait une augmentation proportionnelle du personnel.',
+        'La disposition des analyseurs est adaptée de manière optimale au flux actuel des échantillons.',
+        'L’envoi vers des laboratoires partenaires nécessite une saisie manuelle des données ou un réétiquetage.',
+        'La validation technique des résultats de routine est largement automatisée.',
+        'Les collaborateurs sont affectés à des postes fixes et changent rarement de secteur.',
+        'Les prescriptions sont entièrement numériques sans transfert manuel.',
+        'Certains appareils fonctionnent comme des zones de données séparées sans intégration complète au LIS.',
+        'Les délais de traitement sont surveillés via des tableaux de bord en temps réel.',
+        'La gestion des réactifs repose sur des contrôles visuels et des commandes manuelles.'
+      ],
+      it: [
+        'I campioni arrivano in laboratorio senza necessità di rilavorazione manuale prima della preanalitica.',
+        'Un aumento del 50% del volume dei campioni richiederebbe un aumento proporzionale del personale.',
+        'La disposizione degli analizzatori è ottimizzata rispetto al flusso attuale dei campioni.',
+        'La spedizione ai laboratori partner richiede inserimenti manuali o rietichettatura.',
+        'La validazione tecnica dei risultati di routine è ampiamente automatizzata.',
+        'I collaboratori sono assegnati a postazioni fisse e raramente ruotano tra reparti.',
+        'Le prescrizioni avvengono in modo completamente digitale senza trasferimenti manuali.',
+        'Alcuni dispositivi operano come aree dati separate senza integrazione completa nel LIS.',
+        'I tempi di refertazione sono monitorati tramite dashboard in tempo reale.',
+        'La gestione dei reagenti avviene tramite controlli visivi e riordini manuali.'
+      ]
+    };
+
+    function localizeQuestions() {
+      const qset = localizedQuestions[state.language] || localizedQuestions.de;
+      questions.forEach((q, i) => {
+        q.text = qset[i];
+      });
+    }
+
+
+    const questions = [
+      { id: 1, cluster: 'Prozesse', icon: icons.activity, text: 'Die Proben treffen so im Labor ein, dass sie ohne manuelle Nachbearbeitung (kein Umkleben, Überkleben oder Anbringen von Zusatzetiketten) direkt in die Präanalytik gegeben werden können.' },
+      { id: 2, cluster: 'Organisation', icon: icons.users, text: 'Eine Steigerung des Probenvolumens um 50% erfordert im aktuellen Setup eine proportionale Aufstockung des Personals.' },
+      { id: 3, cluster: 'Organisation', icon: icons.settings, text: 'Die räumliche Anordnung der Analysegeräte ist optimal an den aktuellen Probenfluss angepasst.' },
+      { id: 4, cluster: 'Prozesse', icon: icons.activity, text: 'Der Versand an externe Partnerlabore erfordert eine manuelle Datenerfassung oder Umetikettierung der Proben.' },
+      { id: 5, cluster: 'Digitalisierung', icon: icons.laptop, text: 'Die technische Validierung der Routine-Ergebnisse im Normbereich läuft weitgehend regelbasiert und automatisiert ab.' },
+      { id: 6, cluster: 'Organisation', icon: icons.users, text: 'Die Mitarbeitenden sind festen Arbeitsplätzen zugeordnet und rotieren selten bereichsübergreifend.' },
+      { id: 7, cluster: 'Digitalisierung', icon: icons.laptop, text: 'Die Verordnung erfolgt durchgehend digital und ohne manuelle Übertragungsschritte.' },
+      { id: 8, cluster: 'Digitalisierung', icon: icons.laptop, text: 'Die verwendeten Subsysteme arbeiten als separate Datenbereiche ohne vollständige Integration in das LIS.' },
+      { id: 9, cluster: 'Digitalisierung', icon: icons.chart, text: 'Die Überwachung der Durchlaufzeiten (TAT) erfolgt über Echtzeit-Dashboards.' },
+      { id: 10, cluster: 'Logistik', icon: icons.clipboard, text: 'Die Bestandsverwaltung von Reagenzien wird durch visuelle Kontrolle und manuelle Nachbestellung gesteuert.' }
+    ];
+
+    // Für negativ formulierte Fragen wird die Bewertung invertiert.
+    // Ziel: Ein optimiertes Labor erreicht in jedem Cluster hohe Werte.
+    // Positive Fragen: "Trifft voll zu" = 4 Punkte.
+    // Negative Fragen: "Trifft gar nicht zu" = 4 Punkte.
+    const reverseScored = new Set([2, 4, 6, 8, 10]);
+
+    const localizedClusterTexts = {
+      de: {
+        Logistik: {
+          low: {
+            title: 'Reifegrad tief',
+            status: 'Die Materialwirtschaft basiert primär auf physischer Sichtkontrolle am Lagerplatz. Bestellungen werden erfahrungsbasiert ausgelöst, was zu einem schwankenden Lagerbestand führt.',
+            action: 'Unterstützung bei der Einführung einer digital gestützten Bestandsführung mit Schaffung einer Echtzeit-Übersicht.'
+          },
+          mid: {
+            title: 'Reifegrad mittel',
+            status: 'Die Materialwirtschaft ist in ihren Grundzügen etabliert und teilweise digital unterstützt. Das System schöpft jedoch noch nicht das volle Automatisierungspotenzial aus, da Teilbereiche der Beschaffung oder Bestandsführung weiterhin manuelle oder teilsystemgestützte Eingriffe erfordern.',
+            action: 'Wir optimieren Ihre bestehenden Logistikabläufe und unterstützen bei der Etablierung von automatisierten Schnittstellen, um das Labor direkt mit dem Beschaffungswesen (z.B. Ihrem ERP-System) zu synchronisieren und einen durchgängig nahtlosen Bestellprozess zu gewährleisten.'
+          },
+          high: {
+            title: 'Reifegrad hoch',
+            status: 'Das Labor nutzt ein vollautomatisiertes Bestandsmanagement, bei dem definierte Mindestmengen völlig eigenständig Bestellvorschläge oder direkte Lieferungen auslösen.',
+            action: 'Einführung eines prädiktiven Verbrauchs-Managements auf Basis historischer Daten zur strategischen Einkaufsoptimierung.'
+          }
+        },
+        Organisation: {
+          low: {
+            title: 'Reifegrad tief',
+            status: 'Die aktuelle Organisation ist stark auf das Expertenwissen an festen Arbeitsplätzen angewiesen, was bei steigenden Probenmengen zu einem deutlich erhöhten Zeitaufwand führt. Das räumliche Setup und die feste Aufgabenverteilung begrenzen momentan die Flexibilität und Skalierbarkeit des Labors bei Volumen- und, oder Personalschwankungen.',
+            action: 'Entwicklung eines Laborkonzepts, das durch ein prozessorientiertes Layout und ein flexibles Personalmodell die nötige Agilität für Volumensprünge oder Personalschwankungen schafft.'
+          },
+          mid: {
+            title: 'Reifegrad mittel',
+            status: 'Das Labor verfügt über eine solide und funktionale Organisationsstruktur. Die aktuellen Layout- und Personalmodelle tragen den Basisbetrieb zuverlässig, bieten jedoch bei steigenden Probenvolumina oder Lastspitzen noch ungenutzte Potenziale hinsichtlich einer vollumfänglichen Skalierbarkeit und Agilität.',
+            action: 'Wir analysieren Ihre bestehenden Arbeitsabläufe und Organisationsstrukturen ganzheitlich, um passgenaue Lösungsansätze für Ihre spezifischen Anforderungen zu entwickeln. Durch die gezielte Optimierung der Ressourcenplanung und der strukturellen Abläufe lösen wir verbleibende Engpässe auf.'
+          },
+          high: {
+            title: 'Reifegrad hoch',
+            status: 'Sie betreiben eine effiziente Organisation, in der ein flexibles Team in einem auf den Probenfluss ausgerichteten Umfeld arbeitet. Das Labor ist bereits heute so aufgestellt, dass signifikantes Wachstum bei minimalem zusätzlichem Personaleinsatz realisiert werden kann.',
+            action: 'Wir nutzen Ihre operative Reife, um das Labor als skalierbare und leistungsstarke Plattform zu festigen und durch kontinuierliche methodische Innovationen den Vorsprung in Effizienz und Mitarbeiterzufriedenheit abzusichern.'
+          }
+        },
+        Digitalisierung: {
+          low: {
+            title: 'Reifegrad tief',
+            status: 'Digitale Medienbrüche prägen aktuell den Informationsfluss. Die Verordnung erfordert oft noch manuelle Übertragungsschritte, und einzelne Geräte agieren weitgehend als isolierte Dateninseln. Da die technische Validierung und die Überwachung der Durchlaufzeiten überwiegend manuell erfolgen, ist der administrative Aufwand für das Fachpersonal hoch.',
+            action: 'Wir analysieren Ihre aktuellen Informationsflüsse und manuellen Schnittstellen. Gemeinsam mit Ihnen entwickeln wir ein strategisches Digitalisierungskonzept. Darin definieren wir die prozessualen Anforderungen, um künftig einen durchgängigen Datenfluss von der Auftragserfassung bis zur Ergebnismeldung zu gewährleisten und erste regelbasierte Validierungen einzuführen. Ziel unserer Beratung ist es, die konzeptionelle Basis zu schaffen, um Ihre Fachkräfte gezielt von repetitiven Datentätigkeiten zu entlasten und mehr Transparenz in den Prozessen zu schaffen.'
+          },
+          mid: {
+            title: 'Reifegrad mittel',
+            status: 'Die Digitalisierung ist in den Kernprozessen des Labors bereits gut verankert und erste Automatisierungsschritte sind erfolgreich implementiert. Dennoch bestehen bei der ganzheitlichen Vernetzung spezialisierter Subsysteme und im durchgängigen Datenfluss noch Potenziale, um eine vollständige Echtzeit-Transparenz zu erreichen.',
+            action: 'Wir analysieren Ihre digitalen Workflows und Informationsflüsse, um verbleibende Systemgrenzen auf prozessualer Ebene zu überbrücken. Gemeinsam definieren wir die strategischen Anforderungen an einen durchgängigen Datenfluss und erarbeiten ein Konzept zur Optimierung Ihrer Validierungsprozesse. Unser Ziel ist es, die optimalen organisatorischen Rahmenbedingungen für einen nahtlosen Informationsfluss zu schaffen.'
+          },
+          high: {
+            title: 'Reifegrad hoch',
+            status: 'Das Labor agiert als integrierte digitale Einheit. Von der durchgehend papierlosen Verordnung über eine intelligente, regelbasierte Freigabe bis hin zur Echtzeit-Steuerung über Dashboards sind alle Prozesse datentechnisch synchronisiert. Die Integration der Subsysteme erlaubt eine ganzheitliche Sicht auf alle diagnostischen Daten.',
+            action: 'Wir nutzen Ihre umfassende digitale Transparenz als starkes Fundament für die nächste Innovationsstufe. Gemeinsam mit Ihnen evaluieren wir, wie Sie Ihre Daten-Insights nutzen können, um zukünftige Auslastungen und Ressourcen vorausschauend zu planen. Darüber hinaus beraten wir Sie bei der strategischen Verfeinerung komplexer diagnostischer Pfade, um Ihr Labor als Vorreiter in der vernetzten und datengesteuerten Diagnostik weiter zu stärken.'
+          }
+        },
+        Prozesse: {
+          low: {
+            title: 'Reifegrad tief',
+            status: 'Der Laboralltag ist aktuell durch einen hohen Anteil an manueller Vor- und Nachbereitung geprägt. Da Proben beim Eintreffen oft umetikettiert werden müssen und der Versand an Partnerlabore eine händische Datenerfassung erfordert, entstehen erhebliche administrative Reibungsverluste an den Schnittstellen. Dies bindet Fachpersonal in logistischen Tätigkeiten und erhöht die Komplexität im Probenhandling.',
+            action: 'Wir analysieren Ihren aktuellen Proben- und Informationsfluss und erarbeiten gemeinsam mit Ihnen ein ganzheitliches Konzept zur Harmonisierung der Prozesse und Barcode-Logiken mit Ihren Einsendern und Partnerlaboren. Wir definieren die prozessualen und strategischen Anforderungen, die notwendig sind, damit Ihre IT-Partner ein Verfahren etablieren können, welches manuelle Umklebe- und Erfassungsschritte künftig vollständig eliminiert und so die Fehleranfälligkeit massiv senkt.'
+          },
+          mid: {
+            title: 'Reifegrad mittel',
+            status: 'Die Kernprozesse im Labor weisen eine gute Prozessdisziplin und Standardisierung auf. An den Schnittstellen zu externen Partnern oder beim Versand existieren jedoch noch Optimierungsbedarfe, da der Informations- und Probenfluss hier oft noch nicht durchgängig vollautomatisiert abläuft und manuelle Zwischenschritte erfordert.',
+            action: 'Wir evaluieren die verbleibenden manuellen Schnittstellen in Ihren Labor- und Versandprozessen und definieren die strategischen Anforderungen für eine durchgängige Automatisierung. Gemeinsam erarbeiten wir ein zukunftsfähiges Konzept für den optimalen Informationsaustausch.'
+          },
+          high: {
+            title: 'Reifegrad hoch',
+            status: 'Ihr Labor agiert bereits als hocheffizienter Knotenpunkt in einem vernetzten Diagnostik-Netzwerk. Proben fliessen ohne manuelle Etikettenanpassung direkt in die Analytik, und der externe Versand ist datentechnisch sowie physisch vollautomatisiert abgebildet.',
+            action: 'Wir nutzen den hohen Reifegrad Ihrer Prozesse, um Sie bei der strategischen Weiterentwicklung zu begleiten und gemeinsam Konzepte für strukturierte strategische Partnerschaften zu etablieren. Wir beraten Sie methodisch, wie Sie diesen hocheffizienten Status Quo auch bei steigender Komplexität im Markt absichern und die gewonnene Zeit Ihres Teams strategisch für den kontinuierlichen Ausbau der diagnostischen Qualität nutzen können.'
+          }
         }
+      },
 
-        window.startQuiz = () => {
-            state.step = 'quiz';
-            state.currentQ = 0;
-            state.answers = {};
-            render();
-        };
-
-        window.answerQuestion = (val) => {
-            state.answers[state.currentQ] = val;
-            if (state.currentQ < questions.length - 1) {
-                state.currentQ++;
-                render();
-            } else {
-                state.step = 'loading';
-                render();
-                simulateLoading();
-            }
-        };
-
-        window.restartQuiz = () => {
-            state.step = 'start';
-            render();
-        };
-
-        function simulateLoading() {
-            let progress = 0;
-            const progressEl = document.getElementById('loading-progress');
-            const interval = setInterval(() => {
-                progress += Math.floor(Math.random() * 15) + 5;
-                if (progress >= 100) {
-                    progress = 100;
-                    clearInterval(interval);
-                    setTimeout(() => {
-                        state.step = 'result';
-                        render();
-                    }, 300);
-                }
-                if (progressEl) progressEl.innerText = progress + '%';
-            }, 150);
+      en: {
+        Logistik: {
+          low: {
+            title: 'Low maturity',
+            status: 'Materials management is primarily based on physical visual checks at the storage location. Orders are triggered based on experience, which leads to fluctuating stock levels.',
+            action: 'Support with the introduction of digitally supported inventory management to create a real-time overview.'
+          },
+          mid: {
+            title: 'Medium maturity',
+            status: 'Materials management is established in its basic form and partly digitally supported. However, the system does not yet fully exploit its automation potential, as parts of procurement or inventory management still require manual or partly system-supported interventions.',
+            action: 'We optimize your existing logistics processes and support the establishment of automated interfaces to synchronize the laboratory directly with procurement, for example your ERP system, and to ensure a seamless ordering process.'
+          },
+          high: {
+            title: 'High maturity',
+            status: 'The laboratory uses fully automated inventory management in which defined minimum quantities independently trigger order proposals or direct deliveries.',
+            action: 'Introduction of predictive consumption management based on historical data for strategic purchasing optimization.'
+          }
+        },
+        Organisation: {
+          low: {
+            title: 'Low maturity',
+            status: 'The current organization relies heavily on expert knowledge at fixed workstations, which leads to significantly higher effort as sample volumes increase. The spatial setup and fixed task allocation currently limit the flexibility and scalability of the laboratory in the event of volume or staffing fluctuations.',
+            action: 'Development of a laboratory concept that creates the necessary agility for volume jumps or staffing fluctuations through a process-oriented layout and a flexible staffing model.'
+          },
+          mid: {
+            title: 'Medium maturity',
+            status: 'The laboratory has a solid and functional organizational structure. The current layout and staffing models reliably support routine operations, but still offer unused potential for full scalability and agility in the event of rising sample volumes or peak loads.',
+            action: 'We analyze your existing workflows and organizational structures holistically to develop tailored solution approaches for your specific requirements. By optimizing resource planning and structural processes, we resolve remaining bottlenecks.'
+          },
+          high: {
+            title: 'High maturity',
+            status: 'You operate an efficient organization in which a flexible team works in an environment aligned with the sample flow. The laboratory is already positioned to handle significant growth with minimal additional staffing.',
+            action: 'We use your operational maturity to strengthen the laboratory as a scalable and high-performing platform and secure your advantage in efficiency and employee satisfaction through continuous methodological innovation.'
+          }
+        },
+        Digitalisierung: {
+          low: {
+            title: 'Low maturity',
+            status: 'Digital discontinuities currently characterize the information flow. Ordering often still requires manual transfer steps, and individual devices largely act as isolated data islands. Because technical validation and turnaround-time monitoring are mostly manual, the administrative burden for specialist staff is high.',
+            action: 'We analyze your current information flows and manual interfaces. Together with you, we develop a strategic digitalization concept and define the process requirements for an end-to-end data flow from order entry to result reporting, including initial rule-based validations.'
+          },
+          mid: {
+            title: 'Medium maturity',
+            status: 'Digitalization is already well established in the laboratory’s core processes and initial automation steps have been successfully implemented. However, potential remains in the holistic networking of specialized subsystems and in the continuous data flow to achieve full real-time transparency.',
+            action: 'We analyze your digital workflows and information flows to bridge remaining system boundaries at process level. Together, we define the strategic requirements for an end-to-end data flow and develop a concept for optimizing your validation processes.'
+          },
+          high: {
+            title: 'High maturity',
+            status: 'The laboratory operates as an integrated digital unit. From fully paperless ordering and intelligent rule-based release to real-time dashboard control, all processes are synchronized at data level. Subsystem integration enables a holistic view of all diagnostic data.',
+            action: 'We use your comprehensive digital transparency as a strong foundation for the next stage of innovation. Together, we evaluate how data insights can be used to plan future workload and resources proactively and further refine complex diagnostic pathways strategically.'
+          }
+        },
+        Prozesse: {
+          low: {
+            title: 'Low maturity',
+            status: 'Daily laboratory work is currently characterized by a high proportion of manual pre- and post-processing. Samples often need to be relabeled on arrival and shipping to partner laboratories requires manual data entry, creating substantial administrative friction at the interfaces.',
+            action: 'We analyze your current sample and information flow and jointly develop a holistic concept for harmonizing processes and barcode logic with your submitters and partner laboratories.'
+          },
+          mid: {
+            title: 'Medium maturity',
+            status: 'The core laboratory processes show good process discipline and standardization. However, optimization needs remain at interfaces with external partners or in shipping, where the information and sample flow is often not yet fully automated and still requires manual intermediate steps.',
+            action: 'We evaluate the remaining manual interfaces in your laboratory and shipping processes and define the strategic requirements for end-to-end automation. Together, we develop a future-proof concept for optimal information exchange.'
+          },
+          high: {
+            title: 'High maturity',
+            status: 'Your laboratory already acts as a highly efficient hub in a connected diagnostics network. Samples flow directly into analytics without manual relabeling, and external shipping is fully automated both digitally and physically.',
+            action: 'We use the high maturity of your processes to support your strategic development and jointly establish concepts for structured strategic partnerships.'
+          }
         }
+      },
 
-        function calculateScore() {
-            let total = 0;
-            for (let key in state.answers) {
-                total += state.answers[key];
-            }
-            return total;
+      fr: {
+        Logistik: {
+          low: {
+            title: 'Maturité faible',
+            status: 'La gestion des matériaux repose principalement sur un contrôle visuel physique au lieu de stockage. Les commandes sont déclenchées sur la base de l’expérience, ce qui entraîne des niveaux de stock fluctuants.',
+            action: 'Accompagnement dans l’introduction d’une gestion des stocks assistée numériquement afin de créer une vue d’ensemble en temps réel.'
+          },
+          mid: {
+            title: 'Maturité moyenne',
+            status: 'La gestion des matériaux est établie dans ses principes de base et partiellement soutenue numériquement. Le système n’exploite toutefois pas encore tout son potentiel d’automatisation, car certaines parties des achats ou de la gestion des stocks nécessitent encore des interventions manuelles ou partiellement assistées par système.',
+            action: 'Nous optimisons vos processus logistiques existants et vous accompagnons dans la mise en place d’interfaces automatisées afin de synchroniser directement le laboratoire avec les achats, par exemple votre système ERP, et de garantir un processus de commande fluide.'
+          },
+          high: {
+            title: 'Maturité élevée',
+            status: 'Le laboratoire utilise une gestion des stocks entièrement automatisée, dans laquelle des quantités minimales définies déclenchent de manière autonome des propositions de commande ou des livraisons directes.',
+            action: 'Introduction d’une gestion prédictive de la consommation sur la base de données historiques pour optimiser stratégiquement les achats.'
+          }
+        },
+        Organisation: {
+          low: {
+            title: 'Maturité faible',
+            status: 'L’organisation actuelle dépend fortement du savoir d’experts à des postes fixes, ce qui entraîne une augmentation importante de l’effort lorsque le volume d’échantillons augmente. L’agencement spatial et la répartition fixe des tâches limitent actuellement la flexibilité et l’évolutivité du laboratoire en cas de fluctuations de volume ou de personnel.',
+            action: 'Développement d’un concept de laboratoire qui crée l’agilité nécessaire en cas de variations de volume ou de personnel grâce à un agencement orienté processus et à un modèle de personnel flexible.'
+          },
+          mid: {
+            title: 'Maturité moyenne',
+            status: 'Le laboratoire dispose d’une structure organisationnelle solide et fonctionnelle. Les modèles actuels d’agencement et de personnel soutiennent de manière fiable l’activité de base, mais offrent encore un potentiel inexploité en matière d’évolutivité et d’agilité lors de volumes croissants ou de pics de charge.',
+            action: 'Nous analysons vos flux de travail et structures organisationnelles de manière globale afin de développer des solutions adaptées à vos besoins spécifiques.'
+          },
+          high: {
+            title: 'Maturité élevée',
+            status: 'Vous exploitez une organisation efficace, dans laquelle une équipe flexible travaille dans un environnement aligné sur le flux des échantillons. Le laboratoire est déjà positionné pour absorber une croissance significative avec un minimum de personnel supplémentaire.',
+            action: 'Nous utilisons votre maturité opérationnelle pour consolider le laboratoire comme une plateforme évolutive et performante.'
+          }
+        },
+        Digitalisierung: {
+          low: {
+            title: 'Maturité faible',
+            status: 'Des ruptures numériques caractérisent actuellement le flux d’information. Les prescriptions nécessitent souvent encore des étapes de transfert manuel et certains appareils fonctionnent largement comme des îlots de données isolés. Comme la validation technique et le suivi des délais de traitement sont majoritairement manuels, la charge administrative du personnel spécialisé est élevée.',
+            action: 'Nous analysons vos flux d’information actuels et vos interfaces manuelles. Avec vous, nous développons un concept stratégique de numérisation et définissons les exigences de processus pour un flux de données continu.'
+          },
+          mid: {
+            title: 'Maturité moyenne',
+            status: 'La numérisation est déjà bien ancrée dans les processus clés du laboratoire et les premières étapes d’automatisation ont été mises en œuvre avec succès. Il reste toutefois du potentiel dans la mise en réseau complète des sous-systèmes spécialisés et dans le flux de données continu.',
+            action: 'Nous analysons vos flux numériques et informationnels afin de dépasser les limites système restantes au niveau des processus.'
+          },
+          high: {
+            title: 'Maturité élevée',
+            status: 'Le laboratoire fonctionne comme une unité numérique intégrée. De la prescription entièrement sans papier à la libération intelligente fondée sur des règles et au pilotage en temps réel par tableaux de bord, tous les processus sont synchronisés au niveau des données.',
+            action: 'Nous utilisons votre transparence numérique comme base solide pour la prochaine étape d’innovation.'
+          }
+        },
+        Prozesse: {
+          low: {
+            title: 'Maturité faible',
+            status: 'Le quotidien du laboratoire est actuellement marqué par une part élevée de préparation et de post-traitement manuels. Les échantillons doivent souvent être réétiquetés à leur arrivée et l’envoi aux laboratoires partenaires nécessite une saisie manuelle des données.',
+            action: 'Nous analysons votre flux actuel d’échantillons et d’informations et élaborons avec vous un concept global d’harmonisation des processus et des logiques de codes-barres.'
+          },
+          mid: {
+            title: 'Maturité moyenne',
+            status: 'Les processus clés du laboratoire présentent une bonne discipline et standardisation. Toutefois, des besoins d’optimisation subsistent aux interfaces avec les partenaires externes ou lors de l’expédition.',
+            action: 'Nous évaluons les interfaces manuelles restantes dans vos processus de laboratoire et d’expédition et définissons les exigences stratégiques pour une automatisation continue.'
+          },
+          high: {
+            title: 'Maturité élevée',
+            status: 'Votre laboratoire agit déjà comme un nœud très efficace dans un réseau diagnostique connecté. Les échantillons passent directement en analytique sans adaptation manuelle des étiquettes.',
+            action: 'Nous utilisons le haut degré de maturité de vos processus pour vous accompagner dans votre développement stratégique.'
+          }
         }
+      },
 
-        // --- MODAL LOGIK ---
-        window.openModal = () => {
-            const modal = document.getElementById('contact-modal');
-            const content = document.getElementById('contact-modal-content');
-            modal.classList.remove('hidden');
-            // Trigger reflow für die Animation
-            void modal.offsetWidth;
-            modal.classList.remove('opacity-0');
-            modal.classList.add('opacity-100');
-            content.classList.remove('scale-95');
-            content.classList.add('scale-100');
+      it: {
+        Logistik: {
+          low: {
+            title: 'Maturità bassa',
+            status: 'La gestione dei materiali si basa principalmente sul controllo visivo fisico presso il punto di stoccaggio. Gli ordini vengono attivati sulla base dell’esperienza, causando oscillazioni nelle scorte.',
+            action: 'Supporto nell’introduzione di una gestione delle scorte digitalmente supportata per creare una panoramica in tempo reale.'
+          },
+          mid: {
+            title: 'Maturità media',
+            status: 'La gestione dei materiali è stabilita nei suoi elementi di base e parzialmente supportata digitalmente. Tuttavia, il sistema non sfrutta ancora pienamente il potenziale di automazione, poiché alcune aree degli acquisti o della gestione delle scorte richiedono ancora interventi manuali o parzialmente supportati da sistemi.',
+            action: 'Ottimizziamo i processi logistici esistenti e supportiamo l’introduzione di interfacce automatizzate per sincronizzare direttamente il laboratorio con gli acquisti, ad esempio il sistema ERP.'
+          },
+          high: {
+            title: 'Maturità alta',
+            status: 'Il laboratorio utilizza una gestione delle scorte completamente automatizzata, in cui quantità minime definite generano autonomamente proposte d’ordine o consegne dirette.',
+            action: 'Introduzione di una gestione predittiva dei consumi basata su dati storici per l’ottimizzazione strategica degli acquisti.'
+          }
+        },
+        Organisation: {
+          low: {
+            title: 'Maturità bassa',
+            status: 'L’organizzazione attuale dipende fortemente dalle conoscenze specialistiche in postazioni fisse. Con l’aumento dei volumi di campioni, ciò comporta un notevole aumento dell’impegno. L’assetto degli spazi e la distribuzione fissa dei compiti limitano la flessibilità e la scalabilità del laboratorio.',
+            action: 'Sviluppo di un concetto di laboratorio con layout orientato ai processi e modello di personale flessibile.'
+          },
+          mid: {
+            title: 'Maturità media',
+            status: 'Il laboratorio dispone di una struttura organizzativa solida e funzionale. Gli attuali modelli di layout e personale supportano in modo affidabile l’attività di base, ma offrono ancora potenziale inutilizzato in termini di scalabilità e agilità.',
+            action: 'Analizziamo in modo completo i flussi di lavoro e le strutture organizzative esistenti per sviluppare soluzioni su misura.'
+          },
+          high: {
+            title: 'Maturità alta',
+            status: 'Gestite un’organizzazione efficiente, in cui un team flessibile lavora in un ambiente orientato al flusso dei campioni. Il laboratorio è già in grado di gestire una crescita significativa con un minimo incremento di personale.',
+            action: 'Utilizziamo la vostra maturità operativa per consolidare il laboratorio come piattaforma scalabile e performante.'
+          }
+        },
+        Digitalisierung: {
+          low: {
+            title: 'Maturità bassa',
+            status: 'Le discontinuità digitali caratterizzano attualmente il flusso informativo. Le prescrizioni richiedono spesso ancora passaggi manuali e alcuni dispositivi agiscono come isole di dati isolate. La validazione tecnica e il monitoraggio dei tempi sono in gran parte manuali.',
+            action: 'Analizziamo i flussi informativi attuali e le interfacce manuali. Insieme sviluppiamo un concetto strategico di digitalizzazione.'
+          },
+          mid: {
+            title: 'Maturità media',
+            status: 'La digitalizzazione è già ben radicata nei processi chiave del laboratorio e i primi passi di automazione sono stati implementati con successo. Tuttavia, resta potenziale nella connessione integrata dei sottosistemi specializzati.',
+            action: 'Analizziamo i workflow digitali e i flussi informativi per superare i confini di sistema residui a livello di processo.'
+          },
+          high: {
+            title: 'Maturità alta',
+            status: 'Il laboratorio opera come unità digitale integrata. Dalla prescrizione senza carta al rilascio intelligente basato su regole fino al controllo in tempo reale tramite dashboard, tutti i processi sono sincronizzati a livello dati.',
+            action: 'Utilizziamo la vostra trasparenza digitale come base per il prossimo livello di innovazione.'
+          }
+        },
+        Prozesse: {
+          low: {
+            title: 'Maturità bassa',
+            status: 'Il lavoro quotidiano del laboratorio è attualmente caratterizzato da un’elevata quota di preparazione e post-elaborazione manuale. I campioni devono spesso essere rietichettati all’arrivo e la spedizione ai laboratori partner richiede inserimenti manuali.',
+            action: 'Analizziamo il flusso attuale di campioni e informazioni e sviluppiamo con voi un concetto globale per armonizzare processi e logiche barcode.'
+          },
+          mid: {
+            title: 'Maturità media',
+            status: 'I processi chiave del laboratorio mostrano una buona disciplina e standardizzazione. Tuttavia, permangono esigenze di ottimizzazione alle interfacce con partner esterni o nella spedizione.',
+            action: 'Valutiamo le interfacce manuali residue nei processi di laboratorio e spedizione e definiamo i requisiti strategici per un’automazione continua.'
+          },
+          high: {
+            title: 'Maturità alta',
+            status: 'Il vostro laboratorio opera già come nodo altamente efficiente in una rete diagnostica connessa. I campioni fluiscono direttamente nell’analitica senza adattamenti manuali delle etichette.',
+            action: 'Utilizziamo l’elevata maturità dei vostri processi per accompagnarvi nello sviluppo strategico.'
+          }
+        }
+      }
+    };
+
+    function getClusterText(cluster, levelKey) {
+      const langTexts = localizedClusterTexts[state.language] || localizedClusterTexts.de;
+      return (langTexts[cluster] && langTexts[cluster][levelKey]) || localizedClusterTexts.de[cluster][levelKey];
+    }
+
+    const state = {
+      step: 'start',
+      currentQ: 0,
+      language: 'de',
+      answers: loadAnswers()
+    };
+
+    const languageLabels = {
+      de: 'Deutsch',
+      fr: 'Français',
+      it: 'Italiano',
+      en: 'English'
+    };
+
+    const translations = {
+      de: {
+        assessment: 'Assessment',
+        startTitle: 'Labor-Potenzial-Rechner',
+        startText: 'Evaluieren Sie Ihre Labororganisation entlang von Logistik, Organisation, Digitalisierung und Prozessen. Die Auswertung zeigt je Cluster den aktuellen Reifegrad und konkrete Handlungsfelder.',
+        language: 'Sprache',
+        start: 'Analyse starten',
+        continue: 'Analyse fortsetzen',
+        restart: 'Neu beginnen',
+        overview: 'Auf einen Blick',
+        overviewItems: ['10 Fragen in vier Clustern', 'Konsistente 3-stufige Antwortskala über alle Fragen hinweg', 'Ergebnis mit Clusterbewertung und priorisierten Handlungsfeldern'],
+        question: 'Frage',
+        of: 'von',
+        answered: 'Bereits beantwortet',
+        back: 'Zurück',
+        loading: 'Auswertung',
+        loadingText: 'Die Cluster-Auswertung wird vorbereitet…',
+        result: 'Resultat',
+        resultTitle: 'Labor-Barometer',
+        resultText: 'Die Auswertung zeigt je Cluster den Status quo, den Reifegrad und den daraus abgeleiteten Handlungsbedarf im Spiderdiagramm.',
+        maturity: 'Reifegrad',
+        clusterEvaluation: 'Cluster-Auswertung',
+        needChartTitle: 'Handlungsbedarf nach Cluster',
+        needChartText: 'Das Spiderdiagramm zeigt den Handlungsbedarf: Je weiter aussen ein Punkt liegt, desto höher ist der Bedarf im jeweiligen Cluster.',
+        statusquo: 'Status Quo',
+        topFields: 'Top 3 Handlungsfelder',
+        nextStep: 'Nächster Schritt: Beratung anfragen',
+        nextStepText: 'Nutzen Sie diese Auswertung als Gesprächsgrundlage. Ihre Ergebnisse werden in die vorbereitete E-Mail übernommen.',
+        consulting: 'Beratung anfragen',
+        print: 'Seite drucken',
+        adjust: 'Antworten anpassen',
+        restartQuiz: 'Neu starten',
+        options: ['Trifft voll zu', 'Trifft teilweise zu', 'Trifft gar nicht zu'],
+        modalTitle: 'Beratung anfragen',
+        modalIntro: 'Bitte hinterlassen Sie Ihre Angaben. Wir bereiten Ihre Anfrage anhand Ihrer Auswertung vor.',
+        nameLabel: 'Name / Vorname *',
+        emailLabel: 'E-Mail Adresse *',
+        orgLabel: 'Labor / Organisation *',
+        noteLabel: 'Bemerkung (Optional)',
+        cancel: 'Abbrechen',
+        privacyBefore: 'Ich habe die',
+        privacyLink: 'Datenschutzbestimmungen',
+        privacyAfter: 'gelesen und akzeptiere sie. Ich erlaube dem Unternehmen Roche Diagnostics (Schweiz) AG, mich bezüglich meiner Anfrage zu kontaktieren.',
+        privacyAlert: 'Bitte akzeptieren Sie die Datenschutzbestimmungen, bevor Sie die Anfrage senden.'
+      },
+      en: {
+        assessment: 'Assessment',
+        startTitle: 'Labor Potential Calculator',
+        startText: 'Evaluate your laboratory organization across logistics, organization, digitalization and processes. The report shows the current maturity level and concrete areas for action for each cluster.',
+        language: 'Language',
+        start: 'Start analysis',
+        continue: 'Continue analysis',
+        restart: 'Start over',
+        overview: 'At a glance',
+        overviewItems: ['10 questions across four clusters', 'Consistent 3-level response scale across all questions', 'Result with cluster evaluation and prioritized areas for action'],
+        question: 'Question',
+        of: 'of',
+        answered: 'Answered',
+        back: 'Back',
+        loading: 'Evaluation',
+        loadingText: 'The cluster evaluation is being prepared…',
+        result: 'Result',
+        resultTitle: 'Laboratory Barometer',
+        resultText: 'The report shows the current state, maturity level and derived need for action in the spider chart for each cluster.',
+        maturity: 'Maturity',
+        clusterEvaluation: 'Cluster evaluation',
+        needChartTitle: 'Need for action by cluster',
+        needChartText: 'The spider chart shows the need for action: the further out a point is, the higher the need in that cluster.',
+        statusquo: 'Current State',
+        topFields: 'Top 3 Areas for Action',
+        nextStep: 'Next step: request consulting',
+        nextStepText: 'Use this evaluation as a basis for discussion. Your results will be included in the prepared email.',
+        consulting: 'Request consulting',
+        print: 'Print page',
+        adjust: 'Adjust answers',
+        restartQuiz: 'Restart',
+        options: ['Fully applies', 'Partly applies', 'Does not apply'],
+        modalTitle: 'Request consulting',
+        modalIntro: 'Please leave your details. We will prepare your request based on your evaluation.',
+        nameLabel: 'Name / first name *',
+        emailLabel: 'Email address *',
+        orgLabel: 'Laboratory / organization *',
+        noteLabel: 'Comment (optional)',
+        cancel: 'Cancel',
+        privacyBefore: 'I have read and accept the',
+        privacyLink: 'privacy notice',
+        privacyAfter: 'and authorize Roche Diagnostics (Schweiz) AG to contact me regarding my request.',
+        privacyAlert: 'Please accept the privacy notice before sending your request.'
+      },
+      fr: {
+        assessment: 'Évaluation',
+        startTitle: 'Calculateur de potentiel du laboratoire',
+        startText: 'Évaluez votre organisation de laboratoire selon la logistique, l’organisation, la numérisation et les processus. Le rapport montre le niveau de maturité actuel et les champs d’action concrets par cluster.',
+        language: 'Langue',
+        start: 'Démarrer l’analyse',
+        continue: 'Continuer l’analyse',
+        restart: 'Recommencer',
+        overview: 'En bref',
+        overviewItems: ['10 questions dans quatre clusters', 'Échelle de réponse cohérente à 3 niveaux', 'Résultat avec évaluation par cluster et champs d’action priorisés'],
+        question: 'Question',
+        of: 'sur',
+        answered: 'Répondues',
+        back: 'Retour',
+        loading: 'Évaluation',
+        loadingText: 'L’évaluation des clusters est en préparation…',
+        result: 'Résultat',
+        resultTitle: 'Baromètre du laboratoire',
+        resultText: 'Le rapport présente l’état actuel, le niveau de maturité et le besoin d’action dérivé dans le diagramme radar pour chaque cluster.',
+        maturity: 'Maturité',
+        clusterEvaluation: 'Évaluation des clusters',
+        needChartTitle: 'Besoin d’action par cluster',
+        needChartText: 'Le diagramme radar montre le besoin d’action : plus un point est éloigné du centre, plus le besoin est élevé dans ce cluster.',
+        statusquo: 'Situation actuelle',
+        topFields: 'Top 3 des champs d’action',
+        nextStep: 'Étape suivante : demander un conseil',
+        nextStepText: 'Utilisez cette évaluation comme base de discussion. Vos résultats seront repris dans l’e-mail préparé.',
+        consulting: 'Demander un conseil',
+        print: 'Imprimer la page',
+        adjust: 'Modifier les réponses',
+        restartQuiz: 'Redémarrer',
+        options: ['S’applique entièrement', 'S’applique partiellement', 'Ne s’applique pas'],
+        modalTitle: 'Demander un conseil',
+        modalIntro: 'Veuillez laisser vos coordonnées. Nous préparerons votre demande sur la base de votre évaluation.',
+        nameLabel: 'Nom / prénom *',
+        emailLabel: 'Adresse e-mail *',
+        orgLabel: 'Laboratoire / organisation *',
+        noteLabel: 'Remarque (facultatif)',
+        cancel: 'Annuler',
+        privacyBefore: 'J’ai lu et j’accepte les',
+        privacyLink: 'dispositions relatives à la protection des données',
+        privacyAfter: 'et j’autorise Roche Diagnostics (Suisse) SA à me contacter au sujet de ma demande.',
+        privacyAlert: 'Veuillez accepter les dispositions relatives à la protection des données avant d’envoyer votre demande.'
+      },
+      it: {
+        assessment: 'Valutazione',
+        startTitle: 'Calcolatore del potenziale di laboratorio',
+        startText: 'Valuta la tua organizzazione di laboratorio in termini di logistica, organizzazione, digitalizzazione e processi. Il report mostra il livello di maturità attuale e le aree di intervento concrete per ciascun cluster.',
+        language: 'Lingua',
+        start: 'Avvia analisi',
+        continue: 'Continua analisi',
+        restart: 'Ricomincia',
+        overview: 'In sintesi',
+        overviewItems: ['10 domande in quattro cluster', 'Scala di risposta coerente a 3 livelli', 'Risultato con valutazione per cluster e aree di intervento prioritarie'],
+        question: 'Domanda',
+        of: 'di',
+        answered: 'Risposte',
+        back: 'Indietro',
+        loading: 'Valutazione',
+        loadingText: 'La valutazione dei cluster è in preparazione…',
+        result: 'Risultato',
+        resultTitle: 'Barometro del laboratorio',
+        resultText: 'Il report mostra lo stato attuale, il livello di maturità e il bisogno di intervento derivato nel diagramma radar per ogni cluster.',
+        maturity: 'Maturità',
+        clusterEvaluation: 'Valutazione dei cluster',
+        needChartTitle: 'Bisogno di intervento per cluster',
+        needChartText: 'Il diagramma radar mostra il bisogno di intervento: più un punto è esterno, maggiore è il bisogno nel relativo cluster.',
+        statusquo: 'Situazione attuale',
+        topFields: 'Top 3 aree di intervento',
+        nextStep: 'Prossimo passo: richiedere consulenza',
+        nextStepText: 'Utilizza questa valutazione come base di discussione. I risultati saranno inclusi nell’e-mail preparata.',
+        consulting: 'Richiedi consulenza',
+        print: 'Stampa pagina',
+        adjust: 'Modifica risposte',
+        restartQuiz: 'Riavvia',
+        options: ['Si applica completamente', 'Si applica parzialmente', 'Non si applica'],
+        modalTitle: 'Richiedi consulenza',
+        modalIntro: 'Lasci i suoi dati. Prepareremo la richiesta sulla base della sua valutazione.',
+        nameLabel: 'Nome / cognome *',
+        emailLabel: 'Indirizzo e-mail *',
+        orgLabel: 'Laboratorio / organizzazione *',
+        noteLabel: 'Osservazione (facoltativa)',
+        cancel: 'Annulla',
+        privacyBefore: 'Ho letto e accetto le',
+        privacyLink: 'disposizioni sulla protezione dei dati',
+        privacyAfter: 'e autorizzo Roche Diagnostics (Schweiz) AG a contattarmi in merito alla mia richiesta.',
+        privacyAlert: 'Si prega di accettare le disposizioni sulla protezione dei dati prima di inviare la richiesta.'
+      }
+    };
+
+    function t(key) {
+      const lang = translations[state.language] || translations.de;
+      return lang[key] || translations.de[key] || key;
+    }
+
+    const clusterNameTranslations = {
+      de: {
+        Logistik: 'Logistik',
+        Organisation: 'Organisation',
+        Digitalisierung: 'Digitalisierung',
+        Prozesse: 'Prozesse'
+      },
+      en: {
+        Logistik: 'Logistics',
+        Organisation: 'Organization',
+        Digitalisierung: 'Digitalization',
+        Prozesse: 'Processes'
+      },
+      fr: {
+        Logistik: 'Logistique',
+        Organisation: 'Organisation',
+        Digitalisierung: 'Numérisation',
+        Prozesse: 'Processus'
+      },
+      it: {
+        Logistik: 'Logistica',
+        Organisation: 'Organizzazione',
+        Digitalisierung: 'Digitalizzazione',
+        Prozesse: 'Processi'
+      }
+    };
+
+    function clusterName(cluster) {
+      const names = clusterNameTranslations[state.language] || clusterNameTranslations.de;
+      return names[cluster] || cluster;
+    }
+
+    const privacyLinks = {
+      de: 'https://www.roche.ch/datenschutzerklaerung/datenschutzerklaerung-roche-diagnostics',
+      en: 'https://www.roche.ch/en/privacy-policy/privacy-notice-roche-diagnostics',
+      fr: 'https://www.roche.ch/fr/la-protection-des-donnees-personnelles/declaration-generale-confidentialite-roche-diagnostics',
+      it: 'https://www.roche.ch/it/privacy-policy/privacy-notice-roche-diagnostics'
+    };
+
+    function privacyLink() {
+      return privacyLinks[state.language] || privacyLinks.de;
+    }
+
+    function refreshModalLanguage() {
+      const setText = (id, value) => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = value;
+      };
+
+      setText('modal-title', t('modalTitle'));
+      setText('modal-intro', t('modalIntro'));
+      setText('name-label', t('nameLabel'));
+      setText('email-label', t('emailLabel'));
+      setText('org-label', t('orgLabel'));
+      setText('note-label', t('noteLabel'));
+      setText('cancel-label', t('cancel'));
+      setText('submit-label', t('consulting'));
+      setText('privacy-before', t('privacyBefore'));
+      setText('privacy-after', t('privacyAfter'));
+
+      const link = document.getElementById('privacy-link');
+      if (link) {
+        link.textContent = t('privacyLink');
+        link.href = privacyLink();
+      }
+    }
+
+    function setLanguage(lang) {
+      state.language = lang;
+      refreshModalLanguage();
+      render();
+    }
+
+    const app = document.getElementById('app');
+
+    function loadAnswers() {
+      try {
+        return JSON.parse(localStorage.getItem('labscan_answers_v2') || '{}');
+      } catch (error) {
+        return {};
+      }
+    }
+
+    function saveAnswers() {
+      localStorage.setItem('labscan_answers_v2', JSON.stringify(state.answers));
+    }
+
+    function clearAnswers() {
+      localStorage.removeItem('labscan_answers_v2');
+    }
+
+    function getAnsweredCount() {
+      return Object.keys(state.answers).length;
+    }
+
+    function scoreForQuestion(questionId, answerValue) {
+      // 3er-Skala:
+      // Positive Fragen: voll=3, teilweise=2, gar nicht=1.
+      // Negative Fragen: voll=1, teilweise=2, gar nicht=3.
+      return reverseScored.has(questionId) ? 4 - answerValue : answerValue;
+    }
+
+    function getQuestionOptions(questionIndex) {
+      // Die Antwortmöglichkeiten bleiben bewusst konsistent.
+      // Die Bewertung wird bei positiv formulierten Fragen intern invertiert,
+      // damit die Nutzerführung klar bleibt.
+      return [...answerScale];
+    }
+
+    function getClusterScores() {
+      const clusters = { Logistik: 0, Organisation: 0, Digitalisierung: 0, Prozesse: 0 };
+      questions.forEach((q, index) => {
+        const answer = state.answers[index];
+        if (answer) clusters[q.cluster] += scoreForQuestion(q.id, answer);
+      });
+      return clusters;
+    }
+
+    function getClusterLevel(cluster, score) {
+      const thresholds = {
+        // 3er-Skala: je Frage 1 bis 3 Punkte.
+        // Logik:
+        // - Reifegrad hoch / Handlungsbedarf niedrig nur bei voller Punktzahl im Cluster.
+        // - Sobald mindestens ein Optimierungspunkt erkannt wird, fällt der Cluster mindestens auf mittel.
+        // - Bei deutlichen Abweichungen wird der Cluster auf Reifegrad tief / Handlungsbedarf hoch gesetzt.
+        Logistik: { lowMax: 1, maxScore: 3 },
+        Organisation: { lowMax: 4, maxScore: 9 },
+        Digitalisierung: { lowMax: 6, maxScore: 12 },
+        Prozesse: { lowMax: 3, maxScore: 6 }
+      };
+
+      const t = thresholds[cluster];
+      if (score === t.maxScore) return 'high';
+      if (score <= t.lowMax) return 'low';
+      return 'mid';
+    }
+
+    function getConsultingNeed(levelKey) {
+      const labels = {
+        de: { low: 'Handlungsbedarf hoch', mid: 'Handlungsbedarf mittel', high: 'Handlungsbedarf niedrig' },
+        en: { low: 'High need for action', mid: 'Medium need for action', high: 'Low need for action' },
+        fr: { low: 'Besoin d’action élevé', mid: 'Besoin d’action moyen', high: 'Besoin d’action faible' },
+        it: { low: 'Bisogno di intervento elevato', mid: 'Bisogno di intervento medio', high: 'Bisogno di intervento basso' }
+      };
+      return (labels[state.language] || labels.de)[levelKey];
+    }
+
+    function getMaturityLabel(levelKey) {
+      const labels = {
+        de: { low: 'Reifegrad tief', mid: 'Reifegrad mittel', high: 'Reifegrad hoch' },
+        en: { low: 'Low maturity', mid: 'Medium maturity', high: 'High maturity' },
+        fr: { low: 'Maturité faible', mid: 'Maturité moyenne', high: 'Maturité élevée' },
+        it: { low: 'Maturità bassa', mid: 'Maturità media', high: 'Maturità alta' }
+      };
+      return (labels[state.language] || labels.de)[levelKey];
+    }
+
+    function getMaturityShort(levelKey) {
+      const labels = {
+        de: { low: 'tief', mid: 'mittel', high: 'hoch' },
+        en: { low: 'low', mid: 'medium', high: 'high' },
+        fr: { low: 'faible', mid: 'moyenne', high: 'élevée' },
+        it: { low: 'bassa', mid: 'media', high: 'alta' }
+      };
+      return (labels[state.language] || labels.de)[levelKey];
+    }
+
+    function getMaxScore(cluster) {
+      const counts = { Logistik: 1, Organisation: 3, Digitalisierung: 4, Prozesse: 2 };
+      return counts[cluster] * 3;
+    }
+
+    function getMinScore(cluster) {
+      const counts = { Logistik: 1, Organisation: 3, Digitalisierung: 4, Prozesse: 2 };
+      return counts[cluster] * 1;
+    }
+
+    function getNeedPercentage(cluster, maturityScore) {
+      const min = getMinScore(cluster);
+      const max = getMaxScore(cluster);
+      const needScore = max - maturityScore + min;
+      return Math.round(((needScore - min) / (max - min)) * 100);
+    }
+
+    
+    function getClusterResults() {
+      const scores = getClusterScores();
+      return Object.entries(scores).map(([cluster, score]) => {
+        const levelKey = getClusterLevel(cluster, score);
+        return {
+          cluster,
+          score,
+          levelKey,
+          needLabel: getConsultingNeed(levelKey),
+          maturityLabel: getMaturityLabel(levelKey),
+          maturityShort: getMaturityShort(levelKey),
+          needPct: getNeedPercentage(cluster, score),
+          ...getClusterText(cluster, levelKey)
         };
+      });
+    }
 
-        window.closeModal = () => {
-            const modal = document.getElementById('contact-modal');
-            const content = document.getElementById('contact-modal-content');
-            modal.classList.remove('opacity-100');
-            modal.classList.add('opacity-0');
-            content.classList.remove('scale-100');
-            content.classList.add('scale-95');
-            setTimeout(() => {
-                modal.classList.add('hidden');
-            }, 300);
-        };
+    function getTopHandlungsfelder() {
+      return getClusterResults()
+        .sort((a, b) => {
+          // Priorisierung nach Handlungsbedarf: Niedrigster Reifegrad zuerst.
+          const rank = { low: 3, mid: 2, high: 1 };
+          if (rank[a.levelKey] !== rank[b.levelKey]) return rank[b.levelKey] - rank[a.levelKey];
+          return a.score - b.score;
+        })
+        .slice(0, 3);
+    }
 
-        window.submitForm = (e) => {
-            e.preventDefault();
-            
-            // Formulardaten auslesen
-            const name = document.getElementById('contact-name').value;
-            const email = document.getElementById('contact-email').value;
-            const org = document.getElementById('contact-org').value;
-            const msg = document.getElementById('contact-message').value;
+    function render() {
+      localizeQuestions();
+      if (state.step === 'start') renderStart();
+      else if (state.step === 'quiz') renderQuiz();
+      else if (state.step === 'loading') renderLoading();
+      else if (state.step === 'result') renderResults();
+    }
 
-            // Resultatdaten auslesen
-            const score = calculateScore();
-            let level;
-            if (score <= 18) level = "Wenig Handlungsbedarf";
-            else if (score <= 28) level = "Mittleres Potenzial";
-            else level = "Hohes Potenzial";
+    function startQuiz(reset = false) {
+      if (reset) {
+        state.answers = {};
+        clearAnswers();
+        state.currentQ = 0;
+      } else {
+        state.currentQ = Math.min(getAnsweredCount(), questions.length - 1);
+      }
+      state.step = 'quiz';
+      render();
+    }
 
-            // Email Betreff und Body generieren
-            const subject = encodeURIComponent(`LabScan Beratungsanfrage: ${org}`);
-            const body = encodeURIComponent(`Guten Tag Herr Sommer,
-
-hiermit möchte ich eine LabScan Beratung anfragen.
-
-Meine Kontaktdaten:
-Name: ${name}
-E-Mail: ${email}
-Labor/Organisation: ${org}
-
-Nachricht:
-${msg || '-'}
-
----
-Meine Ergebnisse aus dem Labor-Potenzial-Rechner:
-Score: ${score} / 40
-Identifizierter Status: ${level}
-
-Top 3 Handlungsfelder für unser Labor:
-1. Prozessglättung: Harmonisierung von Laufwegen und Auflösung von Silos zur Senkung der Durchlaufzeiten.
-2. Kosten pro Befund: Automatisierung manueller Schritte zur Senkung der Produktionskosten und Erhöhung der Widerstandsfähigkeit.
-3. Digitale Validierung: Regelbasierte Auto-Validation zur Entlastung des Fachpersonals von repetitiven Tätigkeiten.
-
-Freundliche Grüsse
-${name}`);
-
-            // Email Client öffnen
-            window.location.href = `mailto:joel.sommer@roche.com?subject=${subject}&body=${body}`;
-            
-            // Modal schliessen und UI Feedback
-            closeModal();
-            setTimeout(() => {
-                alert("Ihr E-Mail-Programm wurde geöffnet. Sie können die Nachricht dort vor dem Senden noch anpassen.");
-            }, 400);
-        };
-
-        // --- VIEWS ---
-        function renderStart() {
-            appDiv.className = "flex-grow flex flex-col items-center justify-center p-6 w-full max-w-3xl mx-auto pt-24 md:pt-12";
-            appDiv.innerHTML = `
-                <div class="fade-in w-full text-center space-y-8">
-                    <p class="text-brand-dark tracking-widest uppercase text-xs font-semibold mb-4">Assessment</p>
-                    <h1 class="text-4xl md:text-5xl font-light text-brand-xdark tracking-tight">
-                        Labor-Potenzial-Rechner
-                    </h1>
-                    <p class="text-lg text-nordic-textSecondary leading-relaxed max-w-2xl mx-auto font-light">
-                        Evaluieren Sie Ihre Labororganisation anhand von 10 zentralen Faktoren. Ein minimalistisches Tool zur Ermittlung verborgener Effizienzreserven.
-                    </p>
-                    
-                    <div class="my-12">
-                        <button onclick="startQuiz()" class="inline-flex items-center gap-3 px-8 py-3 bg-brand-dark hover:bg-brand-xdark text-white rounded-md transition-colors font-medium text-sm">
-                            <span>Analyse starten</span>
-                            ${icons.arrowRight}
-                        </button>
-                    </div>
-
-                    <div class="grid md:grid-cols-3 gap-6 text-left border-t border-gray-200 pt-8 mt-12">
-                        <div>
-                            <p class="text-brand-xdark font-medium text-sm mb-1">Dauer</p>
-                            <p class="text-nordic-textSecondary text-xs">Ca. 2 Minuten</p>
-                        </div>
-                        <div>
-                            <p class="text-brand-xdark font-medium text-sm mb-1">Umfang</p>
-                            <p class="text-nordic-textSecondary text-xs">10 Indikatorenfragen</p>
-                        </div>
-                        <div>
-                            <p class="text-brand-xdark font-medium text-sm mb-1">Ergebnis</p>
-                            <p class="text-nordic-textSecondary text-xs">Sofortige Auswertung</p>
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
-
-        function renderQuiz() {
-            appDiv.className = "flex-grow flex flex-col items-center justify-center p-4 w-full max-w-2xl mx-auto pt-24 md:pt-12";
-            const q = questions[state.currentQ];
-            const progressPct = ((state.currentQ) / questions.length) * 100;
-
-            appDiv.innerHTML = `
-                <div class="fade-in w-full">
-                    <!-- Minimalist Progress -->
-                    <div class="mb-12">
-                        <div class="flex justify-between text-xs text-nordic-textSecondary mb-3 uppercase tracking-wide">
-                            <span>Frage ${state.currentQ + 1} / ${questions.length}</span>
-                            <span class="text-brand-dark font-medium">${q.category}</span>
-                        </div>
-                        <div class="w-full bg-gray-200 h-px">
-                            <div class="bg-brand-dark h-px transition-all duration-300" style="width: ${progressPct}%"></div>
-                        </div>
-                    </div>
-
-                    <!-- Question -->
-                    <div class="mb-12">
-                        <div class="text-brand-xdark mb-6">
-                            ${q.icon}
-                        </div>
-                        <h2 class="text-2xl md:text-3xl font-light text-brand-xdark leading-snug">
-                            ${q.text}
-                        </h2>
-                    </div>
-
-                    <!-- Options -->
-                    <div class="flex flex-col space-y-3">
-                        <button onclick="answerQuestion(1)" class="w-full text-left px-6 py-4 border border-gray-200 rounded-md hover:border-brand-main hover:bg-brand-xlight hover:text-brand-xdark transition-colors text-sm font-medium text-nordic-textPrimary">
-                            1. Trifft gar nicht zu
-                        </button>
-                        <button onclick="answerQuestion(2)" class="w-full text-left px-6 py-4 border border-gray-200 rounded-md hover:border-brand-main hover:bg-brand-xlight hover:text-brand-xdark transition-colors text-sm font-medium text-nordic-textPrimary">
-                            2. Trifft eher nicht zu
-                        </button>
-                        <button onclick="answerQuestion(3)" class="w-full text-left px-6 py-4 border border-gray-200 rounded-md hover:border-brand-main hover:bg-brand-xlight hover:text-brand-xdark transition-colors text-sm font-medium text-nordic-textPrimary">
-                            3. Trifft eher zu
-                        </button>
-                        <button onclick="answerQuestion(4)" class="w-full text-left px-6 py-4 border border-gray-200 rounded-md hover:border-brand-main hover:bg-brand-xlight hover:text-brand-xdark transition-colors text-sm font-medium text-nordic-textPrimary">
-                            4. Trifft voll zu
-                        </button>
-                    </div>
-                </div>
-            `;
-        }
-
-        function renderLoading() {
-            appDiv.className = "flex-grow flex flex-col items-center justify-center p-6 w-full max-w-xl mx-auto pt-24 md:pt-12";
-            appDiv.innerHTML = `
-                <div class="fade-in text-center">
-                    <div class="w-12 h-12 mx-auto mb-6 relative">
-                        <svg class="animate-spin text-gray-200" viewBox="0 0 24 24" fill="none">
-                            <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"></circle>
-                            <path fill="#BC36F0" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                        </svg>
-                    </div>
-                    <p class="text-sm uppercase tracking-widest text-brand-dark mb-2 font-medium">Auswertung</p>
-                    <p class="text-2xl font-light text-brand-xdark" id="loading-progress">0%</p>
-                </div>
-            `;
-        }
-
-        function renderResults() {
-            appDiv.className = "flex-grow flex flex-col items-start p-4 md:p-8 w-full max-w-4xl mx-auto pb-20 pt-24 md:pt-12";
-            
-            const score = calculateScore();
-            let level, indicatorPos;
-            
-            if (score <= 18) {
-                level = "Wenig Handlungsbedarf";
-                indicatorPos = ((score - 10) / 30) * 100;
-            } else if (score <= 28) {
-                level = "Mittleres Potenzial";
-                indicatorPos = ((score - 10) / 30) * 100;
-            } else {
-                level = "Hohes Potenzial";
-                indicatorPos = ((score - 10) / 30) * 100;
-            }
-
-            appDiv.innerHTML = `
-                <div class="fade-in w-full">
-                    <!-- Header -->
-                    <div class="mb-16 text-center">
-                        <p class="text-xs uppercase tracking-widest text-brand-dark font-medium mb-2">Resultat</p>
-                        <h2 class="text-3xl md:text-4xl font-light text-brand-xdark mb-12">Labor-Barometer</h2>
-                        
-                        <!-- Nordic Barometer (angepasst auf Brand Palette) -->
-                        <div class="max-w-xl mx-auto relative px-4">
-                            <div class="flex justify-between text-[10px] text-gray-400 uppercase tracking-widest mb-4">
-                                <span>Optimiert</span>
-                                <span>Potenzial</span>
-                            </div>
-                            
-                            <!-- Track -->
-                            <div class="w-full h-1 bg-brand-light relative rounded-full">
-                                <div class="absolute top-1/2 -mt-2.5 w-1 h-5 bg-brand-dark shadow-sm transition-all duration-1000 ease-out" style="left: calc(${indicatorPos}% - 2px)"></div>
-                                <div class="absolute top-0 left-1/3 w-px h-2 -mt-0.5 bg-brand-main"></div>
-                                <div class="absolute top-0 left-2/3 w-px h-2 -mt-0.5 bg-brand-main"></div>
-                            </div>
-                            
-                            <div class="mt-8">
-                                <span class="inline-block px-4 py-1.5 border border-brand-main bg-white text-sm font-medium text-brand-xdark rounded">
-                                    Status: ${level}
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Content Grid (Sekundäre Boxen in Light Purple) -->
-                    <div class="grid md:grid-cols-2 gap-8 mb-16">
-                        <div class="p-8 bg-brand-light rounded-lg shadow-sm">
-                            <h3 class="text-lg font-medium text-brand-xdark mb-6">Status Quo</h3>
-                            <ul class="space-y-4 text-sm text-nordic-textPrimary font-light leading-relaxed">
-                                <li class="flex items-start gap-3">
-                                    <div class="mt-0.5 text-brand-xdark">${icons.activity}</div>
-                                    <span>Manuelle Schnittstellen ("Touchpoints") binden derzeit wertvolle Personalressourcen.</span>
-                                </li>
-                                <li class="flex items-start gap-3">
-                                    <div class="mt-0.5 text-brand-xdark">${icons.laptop}</div>
-                                    <span>Medienbrüche in der Datenverarbeitung limitieren die Skalierbarkeit bei Volumenwachstum.</span>
-                                </li>
-                                <li class="flex items-start gap-3">
-                                    <div class="mt-0.5 text-brand-xdark">${icons.settings}</div>
-                                    <span>Ressourcenverteilung folgt teils historischen Mustern anstatt einem optimalen Lean-Workflow.</span>
-                                </li>
-                            </ul>
-                        </div>
-
-                        <div class="p-8 bg-brand-light rounded-lg shadow-sm">
-                            <h3 class="text-lg font-medium text-brand-xdark mb-6">Benchmark</h3>
-                            <ul class="space-y-4 text-sm text-nordic-textPrimary font-light leading-relaxed">
-                                <li class="flex items-start gap-3">
-                                    <div class="mt-0.5 text-brand-dark">${icons.check}</div>
-                                    <span><strong>Put and Forget:</strong> Führende Labore verarbeiten Proben ohne manuellen Eingriff bis zur Archivierung.</span>
-                                </li>
-                                <li class="flex items-start gap-3">
-                                    <div class="mt-0.5 text-brand-dark">${icons.check}</div>
-                                    <span><strong>Polyvalenz:</strong> Bereichsübergreifendes Personal federt Spitzenlasten ohne Personalaufbau ab.</span>
-                                </li>
-                                <li class="flex items-start gap-3">
-                                    <div class="mt-0.5 text-brand-dark">${icons.check}</div>
-                                    <span><strong>IT-Integration:</strong> >80% vollautomatische technische Validierung der Routineparameter.</span>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-
-                    <!-- Hebel (Key Takeaway in Extra Light Purple) -->
-                    <div class="mb-16 bg-brand-xlight p-8 md:p-10 rounded-lg shadow-sm">
-                        <h3 class="text-xl font-medium text-brand-xdark mb-8 border-b border-brand-light pb-4">Top 3 Handlungsfelder</h3>
-                        <div class="space-y-6">
-                            <div class="flex flex-col md:flex-row gap-4 md:gap-8 items-start">
-                                <span class="text-sm font-bold text-brand-dark w-8 pt-0.5">01</span>
-                                <div>
-                                    <h4 class="text-base font-medium text-brand-xdark mb-2">Prozessglättung</h4>
-                                    <p class="text-sm font-light text-nordic-textPrimary">Harmonisierung von Laufwegen und Auflösung von Silos (z.B. Annahme vs. Analytik) senkt Durchlaufzeiten auch ohne neue Geräte.</p>
-                                </div>
-                            </div>
-                            <div class="flex flex-col md:flex-row gap-4 md:gap-8 items-start">
-                                <span class="text-sm font-bold text-brand-dark w-8 pt-0.5">02</span>
-                                <div>
-                                    <h4 class="text-base font-medium text-brand-xdark mb-2">Kosten pro Befund</h4>
-                                    <p class="text-sm font-light text-nordic-textPrimary">Automatisierung manueller Schritte senkt die Produktionskosten und stärkt Ihre Widerstandsfähigkeit bei Tarifanpassungen.</p>
-                                </div>
-                            </div>
-                            <div class="flex flex-col md:flex-row gap-4 md:gap-8 items-start">
-                                <span class="text-sm font-bold text-brand-dark w-8 pt-0.5">03</span>
-                                <div>
-                                    <h4 class="text-base font-medium text-brand-xdark mb-2">Digitale Validierung</h4>
-                                    <p class="text-sm font-light text-nordic-textPrimary">Regelbasierte Auto-Validation entlastet Fachpersonal von repetitiver Klick-Arbeit für wertschöpfende Aufgaben.</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Call to Action -->
-                    <div class="bg-brand-dark text-white p-8 md:p-12 rounded-lg text-center md:text-left flex flex-col md:flex-row items-center justify-between gap-8 shadow-md">
-                        <div class="max-w-lg">
-                            <h3 class="text-xl font-medium mb-3 text-white">Der LabScan</h3>
-                            <p class="text-sm font-light text-brand-xlight">Validieren Sie die Hypothesen vor Ort. Sie erhalten eine detaillierte Auswertung Ihrer Handlungsfelder in den Bereichen Kosten, Qualität und Zeit.</p>
-                        </div>
-                        <button onclick="openModal()" class="shrink-0 px-6 py-3 bg-white text-brand-xdark hover:bg-brand-xlight rounded transition-colors text-sm font-semibold shadow-sm">
-                            Beratung anfragen
-                        </button>
-                    </div>
-
-                    <!-- Reset -->
-                    <div class="mt-12 text-center">
-                        <button onclick="restartQuiz()" class="text-xs text-nordic-textSecondary hover:text-brand-dark uppercase tracking-widest transition-colors font-medium">
-                            Neu starten
-                        </button>
-                    </div>
-                </div>
-            `;
-        }
-
-        // --- INIT ---
+    function answerQuestion(value) {
+      state.answers[state.currentQ] = value;
+      saveAnswers();
+      if (state.currentQ < questions.length - 1) {
+        state.currentQ += 1;
         render();
-    </script>
+      } else {
+        state.step = 'loading';
+        render();
+        setTimeout(() => {
+          state.step = 'result';
+          render();
+        }, 650);
+      }
+    }
+
+    function restartQuiz() {
+      state.step = 'start';
+      state.currentQ = 0;
+      state.answers = {};
+      clearAnswers();
+      render();
+    }
+
+    function goBack() {
+      if (state.currentQ > 0) {
+        state.currentQ -= 1;
+        render();
+      }
+    }
+
+    function jumpToQuestion(index) {
+      state.currentQ = index;
+      state.step = 'quiz';
+      render();
+    }
+
+    function renderStart() {
+      const hasProgress = getAnsweredCount() > 0;
+      app.innerHTML = `
+        <section class="min-h-[85vh] flex items-center">
+          <div class="w-full grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10 items-center fade-in pt-16 md:pt-6">
+            <div>
+              <p class="text-brand-dark tracking-[0.2em] uppercase text-xs font-semibold mb-4">${t('assessment')}</p>
+              <h1 class="text-4xl md:text-6xl font-light text-brand-xdark tracking-tight leading-tight text-balance">${t('startTitle')}</h1>
+              <p class="mt-5 text-lg text-nordic-textSecondary leading-relaxed max-w-xl min-w-0 text-pretty">${t('startText')}</p>
+              <div class="mt-6 mb-6">
+                <p class="text-xs uppercase tracking-[0.2em] text-brand-dark font-semibold mb-3">${t('language')}</p>
+                <div class="flex flex-wrap gap-2">
+                  ${Object.entries(languageLabels).map(([key, label]) => `
+                    <button
+                      onclick="setLanguage('${key}')"
+                      class="px-4 py-2 rounded-xl border text-sm transition ${
+                        state.language === key
+                          ? 'bg-brand-dark text-white border-brand-dark'
+                          : 'bg-white text-nordic-textPrimary border-gray-200 hover:bg-brand-xlight'
+                      }"
+                    >
+                      ${label}
+                    </button>
+                  `).join('')}
+                </div>
+              </div>
+
+              <div class="mt-8 flex flex-wrap gap-3">
+                <button onclick="startQuiz(false)" class="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-brand-dark text-white font-medium hover:bg-brand-xdark">
+                  <span>${hasProgress ? t('continue') : t('start')}</span>
+                  ${icons.arrowRight}
+                </button>
+                ${hasProgress ? `<button onclick="startQuiz(true)" class="px-6 py-3 rounded-2xl border border-gray-200 font-medium hover:bg-white">${t('restart')}</button>` : ''}
+              </div>
+              ${hasProgress ? `<p class="mt-4 text-sm text-nordic-textSecondary">Zwischenstand gespeichert: ${getAnsweredCount()} von ${questions.length} Fragen beantwortet.</p>` : ''}
+            </div>
+            <div class="bg-white rounded-[28px] shadow-soft p-6 md:p-8 border border-gray-100">
+              <h2 class="text-lg font-semibold text-brand-xdark mb-4">${t('overview')}</h2>
+              <ul class="space-y-3 text-sm text-nordic-textPrimary">
+                <li>• ${t('overviewItems')[0]}</li>
+                <li>• ${t('overviewItems')[1]}</li>
+                <li>• ${t('overviewItems')[2]}</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+      `;
+    }
+
+    function renderQuiz() {
+      const q = questions[state.currentQ];
+      const progressPct = ((state.currentQ + 1) / questions.length) * 100;
+      const selected = state.answers[state.currentQ];
+      const options = getQuestionOptions(state.currentQ);
+
+      const pills = questions.map((_, i) => {
+        const active = i === state.currentQ;
+        const answered = !!state.answers[i];
+        const cls = active
+          ? 'bg-brand-dark text-white border-brand-dark'
+          : answered
+            ? 'bg-brand-xlight text-brand-xdark border-brand-main'
+            : 'bg-white text-gray-400 border-gray-200';
+        return `<button onclick="jumpToQuestion(${i})" class="w-7 h-7 rounded-full text-xs border ${cls}">${i + 1}</button>`;
+      }).join('');
+
+      const optionHtml = options.map(opt => `
+        <button onclick="answerQuestion(${opt.value})" class="w-full text-left px-5 py-4 rounded-2xl border border-gray-200 transition ${selected === opt.value ? 'option-active' : 'hover:border-brand-main hover:bg-brand-xlight'}">
+          <span class="text-sm md:text-base font-medium">${t('options')[opt.labelKey]}</span>
+        </button>
+      `).join('');
+
+      app.innerHTML = `
+        <section class="max-w-3xl mx-auto pt-16 md:pt-6 fade-in">
+          <div class="flex flex-wrap gap-2 mb-6">${pills}</div>
+          <div class="flex justify-between text-xs uppercase tracking-wider text-nordic-textSecondary mb-3">
+            <span>${t('question')} ${state.currentQ + 1} ${t('of')} ${questions.length}</span>
+            <span class="text-brand-dark font-semibold">${clusterName(q.cluster)}</span>
+          </div>
+          <div class="w-full h-2 bg-gray-200 rounded-full overflow-hidden mb-8">
+            <div class="h-full bg-brand-dark transition-all duration-300" style="width:${progressPct}%"></div>
+          </div>
+          <div class="bg-white rounded-[28px] shadow-soft border border-gray-100 p-6 md:p-10">
+            <div class="text-brand-xdark mb-5">${clusterIcons[q.cluster]}</div>
+            <h2 class="text-2xl md:text-3xl font-light text-brand-xdark leading-snug max-w-2xl min-w-0 text-pretty">${q.text}</h2>
+            <div class="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-3">
+              ${optionHtml}
+            </div>
+            <div class="mt-8 flex items-center justify-between gap-4">
+              <button onclick="goBack()" ${state.currentQ === 0 ? 'disabled' : ''} class="inline-flex items-center gap-2 px-4 py-3 rounded-2xl border border-gray-200 text-sm font-medium ${state.currentQ === 0 ? 'opacity-40 cursor-not-allowed' : 'hover:bg-gray-50'}">
+                ${icons.arrowLeft} ${t('back')}
+              </button>
+              <p class="text-sm text-nordic-textSecondary">${t('answered')}: ${getAnsweredCount()} / ${questions.length}</p>
+            </div>
+          </div>
+        </section>
+      `;
+    }
+
+    function renderLoading() {
+      app.innerHTML = `
+        <section class="min-h-[70vh] flex items-center justify-center fade-in pt-16 md:pt-6">
+          <div class="text-center">
+            <div class="w-14 h-14 mx-auto mb-5">
+              <svg class="animate-spin text-gray-200" viewBox="0 0 24 24" fill="none">
+                <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"></circle>
+                <path fill="#BC36F0" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+              </svg>
+            </div>
+            <p class="text-xs uppercase tracking-[0.2em] text-brand-dark font-semibold mb-2">${t('loading')}</p>
+            <p class="text-2xl font-light text-brand-xdark">${t('loadingText')}</p>
+          </div>
+        </section>
+      `;
+    }
+
+
+    function getRadarChart(results) {
+      const size = 380;
+      const center = 190;
+      const maxRadius = 112;
+      const labelBoxWidth = 92;
+      const labelBoxHeight = 34;
+      const levels = [0.25, 0.5, 0.75, 1];
+
+      const points = results.map((r, index) => {
+        const angle = -Math.PI / 2 + (index * 2 * Math.PI / results.length);
+        const safeNeedPct = Math.max(0, Math.min(100, r.needPct));
+        const radius = (safeNeedPct / 100) * maxRadius;
+        const labelDistance = maxRadius + 42;
+        const labelCenterX = center + Math.cos(angle) * labelDistance;
+        const labelCenterY = center + Math.sin(angle) * labelDistance;
+
+        return {
+          x: center + Math.cos(angle) * radius,
+          y: center + Math.sin(angle) * radius,
+          axisX: center + Math.cos(angle) * maxRadius,
+          axisY: center + Math.sin(angle) * maxRadius,
+          labelX: labelCenterX - labelBoxWidth / 2,
+          labelY: labelCenterY - labelBoxHeight / 2,
+          label: r.cluster,
+          value: safeNeedPct
+        };
+      });
+
+      const grid = levels.map(level => {
+        const radius = maxRadius * level;
+        const polygonPoints = results.map((_, index) => {
+          const angle = -Math.PI / 2 + (index * 2 * Math.PI / results.length);
+          return `${center + Math.cos(angle) * radius},${center + Math.sin(angle) * radius}`;
+        }).join(' ');
+        return `<polygon points="${polygonPoints}" fill="none" stroke="#E5E7EB" stroke-width="1"></polygon>`;
+      }).join('');
+
+      const axes = points.map(p => `
+        <line x1="${center}" y1="${center}" x2="${p.axisX}" y2="${p.axisY}" stroke="#E5E7EB" stroke-width="1"></line>
+      `).join('');
+
+      const polygon = points.map(p => `${p.x},${p.y}`).join(' ');
+      const markers = points.map(p => `<circle cx="${p.x}" cy="${p.y}" r="5" fill="#BC36F0"></circle>`).join('');
+
+      const textLabels = points.map(p => `
+        <foreignObject x="${p.labelX}" y="${p.labelY}" width="${labelBoxWidth}" height="${labelBoxHeight}">
+          <div xmlns="http://www.w3.org/1999/xhtml" lang="de" class="radar-label">
+            ${p.label}
+          </div>
+        </foreignObject>
+      `).join('');
+
+      const legend = results.map(r => `
+        <div class="flex items-center justify-between gap-3 rounded-xl bg-brand-xlight px-4 py-3 min-w-0">
+          <span class="text-sm font-medium text-brand-xdark min-w-0 text-pretty">${clusterIcons[r.cluster]} ${clusterName(r.cluster)}</span>
+          <span class="text-sm text-nordic-textPrimary shrink-0">${Math.max(0, Math.min(100, r.needPct))}%</span>
+        </div>
+      `).join('');
+
+      return `
+        <div class="rounded-[28px] bg-white p-6 md:p-8 border border-gray-100 shadow-soft mb-8 overflow-hidden">
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 items-center">
+            <div class="min-w-0">
+              <h3 class="text-xl font-semibold text-brand-xdark mb-3">${t('needChartTitle')}</h3>
+              <p class="text-sm text-nordic-textSecondary leading-relaxed max-w-xl min-w-0 text-pretty mb-5">
+                ${t('needChartText')}
+              </p>
+              <div class="grid gap-3">
+                ${legend}
+              </div>
+            </div>
+            <div class="w-full max-w-md mx-auto min-w-0">
+              <svg viewBox="0 0 ${size} ${size}" class="w-full h-auto block" role="img" aria-label="Spiderdiagramm Handlungsbedarf">
+                ${grid}
+                ${axes}
+                <polygon points="${polygon}" fill="rgba(188,54,240,0.18)" stroke="#BC36F0" stroke-width="2"></polygon>
+                ${markers}
+                ${textLabels}
+              </svg>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderResults() {
+      const results = getClusterResults();
+      const topFields = getTopHandlungsfelder();
+
+      const indicatorLabels = results.map(r => `<span class="text-xs text-nordic-textSecondary">${clusterName(r.cluster)}</span>`).join('');
+      const scoreHtml = results.map(r => {
+        const barPct = Math.max(0, Math.min(100, 100 - r.needPct));
+        return `
+        <div class="rounded-2xl bg-white p-5 border border-gray-100">
+          <div class="flex items-center justify-between gap-4 mb-3">
+            <h4 class="text-sm font-semibold text-brand-xdark flex items-center gap-2">${clusterIcons[r.cluster]} ${clusterName(r.cluster)}</h4>
+            <span class="text-sm text-nordic-textSecondary capitalize">${r.maturityShort}</span>
+          </div>
+          <div class="h-2 bg-gray-200 rounded-full overflow-hidden mb-3" title="Balken zeigt den Reifegrad">
+            <div class="h-full bg-brand-dark" style="width:${Math.max(0, Math.min(100, barPct))}%"></div>
+          </div>
+          <div class="flex items-center justify-between gap-3 text-xs text-nordic-textSecondary">
+            <span>${t('maturity')}</span>
+            <span>${barPct}%</span>
+          </div>
+        </div>
+      `;
+      }).join('');
+
+      const statusHtml = results.map(r => `
+        <div class="rounded-[28px] bg-brand-light p-6 md:p-8 overflow-hidden">
+          <div class="flex items-start gap-4 mb-5">
+            <div class="shrink-0 text-brand-xdark mt-1">
+              ${clusterIcons[r.cluster]}
+            </div>
+            <div class="min-w-0">
+              <p class="text-[11px] uppercase tracking-[0.25em] text-brand-dark font-semibold mb-1">${t('statusquo')}</p>
+              <h3 class="text-2xl md:text-3xl font-light text-brand-xdark leading-tight text-balance">
+                ${clusterName(r.cluster)}
+              </h3>
+            </div>
+          </div>
+          <p class="text-sm md:text-[15px] leading-relaxed text-nordic-textPrimary text-pretty">
+            ${getClusterText(r.cluster, r.levelKey).status}
+          </p>
+        </div>
+      `).join('');
+
+      const topHtml = topFields.map((r, index) => `
+        <div class="rounded-2xl bg-white p-6 border border-gray-100 shadow-soft">
+          <div class="flex items-start justify-between gap-4">
+            <div>
+              <p class="text-xs uppercase tracking-[0.2em] text-brand-dark font-semibold mb-2">Handlungsfeld ${index + 1}</p>
+              <h4 class="text-lg font-semibold text-brand-xdark">${clusterName(r.cluster)}</h4>
+              <p class="mt-3 text-sm text-nordic-textPrimary leading-relaxed">${getClusterText(r.cluster, r.levelKey).action}</p>
+            </div>
+            <span class="shrink-0 rounded-full bg-brand-xlight text-brand-xdark text-xs font-semibold px-3 py-1">${r.needLabel}</span>
+          </div>
+        </div>
+      `).join('');
+
+      app.innerHTML = `
+        <section class="fade-in pt-16 md:pt-6 pb-16">
+          <div class="text-center mb-12">
+            <p class="text-xs uppercase tracking-[0.2em] text-brand-dark font-semibold mb-2">${t('result')}</p>
+            <h2 class="text-3xl md:text-5xl font-light text-brand-xdark">${t('resultTitle')}</h2>
+            <p class="mt-4 text-nordic-textSecondary max-w-2xl mx-auto">${t('resultText')}</p>
+          </div>
+
+          <div class="rounded-[28px] bg-white p-6 md:p-8 border border-gray-100 shadow-soft mb-8">
+            <div class="mb-6">
+              <p class="text-xs uppercase tracking-[0.2em] text-brand-dark font-semibold mb-2">Cluster-${t('loading')}</p>
+              <h3 class="text-2xl font-semibold text-brand-xdark">${t('maturity')}</h3>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5">${scoreHtml}</div>
+          </div>
+
+          ${getRadarChart(results)}
+
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 mb-8">
+            ${statusHtml}
+          </div>
+
+          <div class="mb-8">
+            <h3 class="text-2xl font-semibold text-brand-xdark mb-5">${t('topFields')}</h3>
+            <div class="grid gap-5">${topHtml}</div>
+          </div>
+
+          <div class="rounded-[28px] bg-brand-dark text-white p-6 md:p-8 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 overflow-hidden">
+            <div class="max-w-2xl min-w-0">
+              <h3 class="text-2xl font-semibold mb-2">${t('nextStep')}</h3>
+              <p class="text-brand-xlight text-sm leading-relaxed">${t('nextStepText')}</p>
+            </div>
+            <div class="flex flex-wrap gap-3 max-w-full">
+              <button onclick="openModal()" class="px-5 py-3 rounded-2xl bg-white text-brand-xdark font-semibold hover:bg-brand-xlight">${t('consulting')}</button>
+              <button onclick="printReport()" class="px-5 py-3 rounded-2xl border border-white/30 text-white font-medium hover:bg-white/10">${t('print')}</button>
+            </div>
+          </div>
+
+          <div class="mt-8 flex flex-wrap gap-3 justify-center">
+            <button onclick="adjustAnswers()" class="px-5 py-3 rounded-2xl border border-gray-200 bg-white font-medium hover:bg-gray-50">${t('adjust')}</button>
+            <button onclick="restartQuiz()" class="px-5 py-3 rounded-2xl border border-gray-200 bg-white font-medium hover:bg-gray-50">${t('restartQuiz')}</button>
+          </div>
+        </section>
+      `;
+    }
+
+    function openModal() {
+      refreshModalLanguage();
+      const modal = document.getElementById('contact-modal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+      toggleSubmitButton();
+    }
+
+    function closeModal() {
+      const modal = document.getElementById('contact-modal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    function toggleSubmitButton() {
+      const checkbox = document.getElementById('privacy-consent');
+      const button = document.getElementById('submit-request-button');
+      if (checkbox && button) {
+        button.disabled = !checkbox.checked;
+      }
+    }
+
+    function submitForm(event) {
+      event.preventDefault();
+
+      const consent = document.getElementById('privacy-consent');
+      if (!consent || !consent.checked) {
+        alert(t('privacyAlert'));
+        return;
+      }
+
+      const name = document.getElementById('contact-name').value;
+      const email = document.getElementById('contact-email').value;
+      const org = document.getElementById('contact-org').value;
+      const msg = document.getElementById('contact-message').value || '-';
+
+      const clusterResults = getClusterResults();
+      const topFelder = getTopHandlungsfelder();
+
+      const clusterText = clusterResults.map(item => `- ${item.cluster}: ${item.needLabel} / ${item.maturityLabel}`).join('\n');
+      const felderText = topFelder.map((f, index) => `${index + 1}. ${f.cluster}: ${f.action}`).join('\n\n');
+
+      const subject = encodeURIComponent(`LabScan Beratungsanfrage: ${org}`);
+      const bodyText = `Guten Tag Herr Sommer,\n\nhiermit möchte ich eine LabScan Beratung anfragen.\n\nMeine Kontaktdaten:\nName: ${name}\nE-Mail: ${email}\nLabor/Organisation: ${org}\n\nNachricht:\n${msg}\n\n---\nMeine Ergebnisse aus dem Labor-Potenzial-Rechner:\n\nClusterbewertung:\n${clusterText}\n\nTop 3 Handlungsfelder:\n${felderText}\n\nFreundliche Grüsse\n${name}`;
+      const body = encodeURIComponent(bodyText);
+
+      const mailtoUrl = `mailto:joel.sommer@roche.com?subject=${subject}&body=${body}`;
+
+      // Robuster als window.location.href, besonders bei lokal geöffneten HTML-Dateien.
+      const mailLink = document.createElement('a');
+      mailLink.href = mailtoUrl;
+      mailLink.style.display = 'none';
+      document.body.appendChild(mailLink);
+
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(bodyText).catch(() => {});
+      }
+
+      window.open(mailtoUrl, '_blank');
+      document.body.removeChild(mailLink);
+
+      closeModal();
+      setTimeout(() => {
+        alert('Die E-Mail wurde vorbereitet. Falls sich kein Mailfenster öffnet, ist auf diesem Gerät vermutlich kein Standard-Mailprogramm für mailto: verknüpft. Der Text wurde, wenn vom Browser erlaubt, zusätzlich in die Zwischenablage kopiert.');
+      }, 250);
+    }
+
+    function printReport() {
+  // Kleine Verzögerung verbessert die Kompatibilität in Chrome/Edge nach dynamischem Rendering.
+  setTimeout(function () {
+    window.focus();
+    window.print();
+  }, 100);
+}
+
+function adjustAnswers() {
+  // Immer bei Frage 1 starten, Antworten behalten
+  state.step = 'quiz';
+  state.currentQ = 0;
+  render();
+}
+
+window.startQuiz = startQuiz;
+    window.answerQuestion = answerQuestion;
+    window.restartQuiz = restartQuiz;
+    window.goBack = goBack;
+    window.jumpToQuestion = jumpToQuestion;
+    window.openModal = openModal;
+    window.closeModal = closeModal;
+    window.submitForm = submitForm;
+window.adjustAnswers = adjustAnswers;
+window.printReport = printReport;
+window.setLanguage = setLanguage;
+window.toggleSubmitButton = toggleSubmitButton;
+
+    render();
+    refreshModalLanguage();
+  </script>
 </body>
 </html>
