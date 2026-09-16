@@ -159,16 +159,17 @@
     }
 
     @media (max-width: 420px) {
-      .radar-label {
-        font-size: 10px;
+      p, li, button, label, input, textarea {
+        font-size: 0.875rem !important;
+      }
+
+      .tracking-\[0\.2em\] {
+        letter-spacing: 0.12em !important;
       }
     }
   </style>
 </head>
 <body class="min-h-screen">
-  <div class="absolute top-4 left-4 md:top-8 md:left-10 z-40 max-w-[38vw]">
-    <img onclick="restartQuiz()" style="cursor:pointer" src="2025Logo (2).png" alt="Roche Consulting Logo" class="h-6 sm:h-8 md:h-10 w-auto drop-shadow-sm" />
-  </div>
   <div class="absolute top-4 right-4 md:top-8 md:right-10 z-40 max-w-[38vw]">
     <img onclick="restartQuiz()" style="cursor:pointer" src="https://upload.wikimedia.org/wikipedia/commons/f/f5/Hoffmann-La_Roche_logo.svg" alt="Roche Logo" class="h-8 sm:h-10 md:h-12 w-auto drop-shadow-sm" />
   </div>
@@ -253,26 +254,25 @@
       ]
     };
 
+    const questions = [
+      { id: 1, cluster: 'Prozesse', icon: icons.activity },
+      { id: 2, cluster: 'Organisation', icon: icons.users },
+      { id: 3, cluster: 'Organisation', icon: icons.settings },
+      { id: 4, cluster: 'Prozesse', icon: icons.activity },
+      { id: 5, cluster: 'Digitalisierung', icon: icons.laptop },
+      { id: 6, cluster: 'Organisation', icon: icons.users },
+      { id: 7, cluster: 'Digitalisierung', icon: icons.laptop },
+      { id: 8, cluster: 'Digitalisierung', icon: icons.laptop },
+      { id: 9, cluster: 'Digitalisierung', icon: icons.chart },
+      { id: 10, cluster: 'Logistik', icon: icons.clipboard }
+    ];
+
     function localizeQuestions() {
       const qset = localizedQuestions[state.language] || localizedQuestions.de;
       questions.forEach((q, i) => {
-        if(i < 10) q.text = qset[i];
+        q.text = qset[i];
       });
     }
-
-    const questions = [
-      { id: 1, cluster: 'Prozesse', icon: icons.activity, text: 'Die Proben treffen so im Labor ein, dass sie ohne manuelle Nachbearbeitung (kein Umkleben, Überkleben oder Anbringen von Zusatzetiketten) direkt in die Präanalytik gegeben werden können.' },
-      { id: 2, cluster: 'Organisation', icon: icons.users, text: 'Eine Steigerung des Probenvolumens um 50% erfordert im aktuellen Setup eine proportionale Aufstockung des Personals.' },
-      { id: 3, cluster: 'Organisation', icon: icons.settings, text: 'Die räumliche Anordnung der Analysegeräte ist optimal an den aktuellen Probenfluss angepasst.' },
-      { id: 4, cluster: 'Prozesse', icon: icons.activity, text: 'Der Versand an externe Partnerlabore erfordert eine manuelle Datenerfassung oder Umetikettierung der Proben.' },
-      { id: 5, cluster: 'Digitalisierung', icon: icons.laptop, text: 'Die technische Validierung der Routine-Ergebnisse im Normbereich läuft weitgehend regelbasiert und automatisiert ab.' },
-      { id: 6, cluster: 'Organisation', icon: icons.users, text: 'Die Mitarbeitenden sind festen Arbeitsplätzen zugeordnet und rotieren selten bereichsübergreifend.' },
-      { id: 7, cluster: 'Digitalisierung', icon: icons.laptop, text: 'Die Verordnung erfolgt durchgehend digital und ohne manuelle Übertragungsschritte.' },
-      { id: 8, cluster: 'Digitalisierung', icon: icons.laptop, text: 'Die verwendeten Subsysteme arbeiten als separate Datenbereiche ohne vollständige Integration in das LIS.' },
-      { id: 9, cluster: 'Digitalisierung', icon: icons.chart, text: 'Die Überwachung der Durchlaufzeiten (TAT) erfolgt über Echtzeit-Dashboards.' },
-      { id: 10, cluster: 'Logistik', icon: icons.clipboard, text: 'Die Bestandsverwaltung von Reagenzien wird durch visuelle Kontrolle und manuelle Nachbestellung gesteuert.' },
-      { id: 11, cluster: 'Report', icon: icons.clipboard, text: 'Form', isForm: true }
-    ];
 
     const state = {
       step: 'start',
@@ -312,7 +312,7 @@
         emailLabel: 'E-Mail Adresse *',
         orgLabel: 'Labor / Organisation *',
         noteLabel: 'Bemerkung (Optional)',
-        submitRequest: 'Den kostenlosen und unverbindlichen Gesamtbericht anfordern',
+        submitRequest: 'Bericht anfordern',
         privacyBefore: 'Ich habe die',
         privacyLink: 'Datenschutzbestimmungen',
         privacyAfter: 'gelesen und akzeptiere und erlaube dem Unternehmen Roche Diagnostics (Schweiz) AG mich bezüglich meiner Anfrage zu kontaktieren.',
@@ -343,7 +343,7 @@
         emailLabel: 'Email address *',
         orgLabel: 'Laboratory / Organization *',
         noteLabel: 'Comment (Optional)',
-        submitRequest: 'Request free and non-binding comprehensive report',
+        submitRequest: 'Request report',
         privacyBefore: 'I have read and accept the',
         privacyLink: 'privacy notice',
         privacyAfter: 'and authorize Roche Diagnostics (Schweiz) AG to contact me regarding my request.',
@@ -374,7 +374,7 @@
         emailLabel: 'Adresse e-mail *',
         orgLabel: 'Laboratoire / Organisation *',
         noteLabel: 'Remarque (Optionnel)',
-        submitRequest: 'Demander le rapport complet gratuit et sans engagement',
+        submitRequest: 'Demander le rapport',
         privacyBefore: 'J\'ai lu et j\'accepte les',
         privacyLink: 'dispositions relatives à la protection des données',
         privacyAfter: 'et j\'autorise Roche Diagnostics (Suisse) SA à me contacter au sujet de ma demande.',
@@ -405,7 +405,7 @@
         emailLabel: 'Indirizzo e-mail *',
         orgLabel: 'Laboratorio / Organizzazione *',
         noteLabel: 'Osservazione (Facoltativa)',
-        submitRequest: 'Richiedi il report completo gratuito e senza impegno',
+        submitRequest: 'Richiedi report',
         privacyBefore: 'Ho letto e accetto le',
         privacyLink: 'disposizioni sulla protezione dei dati',
         privacyAfter: 'e autorizzo Roche Diagnostics (Schweiz) AG a contattarmi in merito alla mia richiesta.',
@@ -513,10 +513,10 @@
         clearAnswers();
         state.currentQ = 0;
       } else {
-        state.currentQ = Math.min(getAnsweredCount(), questions.length - 1);
+        state.currentQ = Math.min(getAnsweredCount(), questions.length); // Allowed to jump to the form if all questions are answered
       }
       
-      if (questions[state.currentQ].isForm) {
+      if (state.currentQ === questions.length) {
         state.step = 'form';
       } else {
         state.step = 'quiz';
@@ -529,9 +529,10 @@
       saveAnswers();
       if (state.currentQ < questions.length - 1) {
         state.currentQ += 1;
-        if (questions[state.currentQ].isForm) {
-           state.step = 'form';
-        }
+        render();
+      } else {
+        state.currentQ += 1;
+        state.step = 'form';
         render();
       }
     }
@@ -553,10 +554,10 @@
     }
 
     function jumpToQuestion(index) {
-      state.currentQ = index;
-      if (questions[index].isForm) {
+      if (index === questions.length) {
         state.step = 'form';
       } else {
+        state.currentQ = index;
         state.step = 'quiz';
       }
       render();
@@ -596,7 +597,7 @@
                 </button>
                 ${hasProgress ? `<button onclick="startQuiz(true)" class="px-6 py-3 rounded-2xl border border-gray-200 font-medium hover:bg-white">${t('restart')}</button>` : ''}
               </div>
-              ${hasProgress ? `<p class="mt-4 text-sm text-nordic-textSecondary">Zwischenstand gespeichert: ${getAnsweredCount()} von ${questions.length - 1} Fragen beantwortet.</p>` : ''}
+              ${hasProgress ? `<p class="mt-4 text-sm text-nordic-textSecondary">Zwischenstand gespeichert: ${getAnsweredCount()} von ${questions.length} Fragen beantwortet.</p>` : ''}
             </div>
             <div class="bg-white rounded-[28px] shadow-soft p-6 md:p-8 border border-gray-100">
               <h2 class="text-lg font-semibold text-brand-xdark mb-4">${t('overview')}</h2>
@@ -613,20 +614,21 @@
 
     function renderQuiz() {
       const q = questions[state.currentQ];
-      const progressPct = ((state.currentQ) / (questions.length)) * 100;
+      const progressPct = ((state.currentQ) / (questions.length + 1)) * 100;
       const selected = state.answers[state.currentQ];
       const options = getQuestionOptions(state.currentQ);
 
-      const pills = questions.map((question, i) => {
+      const pills = Array.from({ length: questions.length + 1 }).map((_, i) => {
         const active = i === state.currentQ;
-        const answered = i < questions.length - 1 ? !!state.answers[i] : false;
+        const answered = i < questions.length ? !!state.answers[i] : false; // Last pill is the form
+        const isFormPill = i === questions.length;
         
         let cls = '';
         if (active) cls = 'bg-brand-dark text-white border-brand-dark';
         else if (answered) cls = 'bg-brand-xlight text-brand-xdark border-brand-main';
         else cls = 'bg-white text-gray-400 border-gray-200';
 
-        const content = question.isForm ? icons.check : (i + 1);
+        const content = isFormPill ? icons.check : (i + 1);
 
         return `<button onclick="jumpToQuestion(${i})" class="w-7 h-7 rounded-full text-xs border flex items-center justify-center ${cls}">${content}</button>`;
       }).join('');
@@ -641,14 +643,14 @@
         <section class="max-w-3xl mx-auto pt-16 md:pt-6 fade-in">
           <div class="flex flex-wrap gap-2 mb-6">${pills}</div>
           <div class="flex justify-between text-xs uppercase tracking-wider text-nordic-textSecondary mb-3">
-            <span>${t('question')} ${state.currentQ + 1} ${t('of')} ${questions.length - 1}</span>
+            <span>${t('question')} ${state.currentQ + 1} ${t('of')} ${questions.length}</span>
             <span class="text-brand-dark font-semibold">${clusterName(q.cluster)}</span>
           </div>
           <div class="w-full h-2 bg-gray-200 rounded-full overflow-hidden mb-8">
             <div class="h-full bg-brand-dark transition-all duration-300" style="width:${progressPct}%"></div>
           </div>
           <div class="bg-white rounded-[28px] shadow-soft border border-gray-100 p-6 md:p-10">
-            <div class="text-brand-xdark mb-5">${clusterIcons[q.cluster] || icons.clipboard}</div>
+            <div class="text-brand-xdark mb-5">${clusterIcons[q.cluster]}</div>
             <h2 class="text-2xl md:text-3xl font-light text-brand-xdark leading-snug max-w-2xl min-w-0 text-pretty">${q.text}</h2>
             <div class="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-3">
               ${optionHtml}
@@ -657,7 +659,7 @@
               <button onclick="goBack()" ${state.currentQ === 0 ? 'disabled' : ''} class="inline-flex items-center gap-2 px-4 py-3 rounded-2xl border border-gray-200 text-sm font-medium ${state.currentQ === 0 ? 'opacity-40 cursor-not-allowed' : 'hover:bg-gray-50'}">
                 ${icons.arrowLeft} ${t('back')}
               </button>
-              <p class="text-sm text-nordic-textSecondary">${t('answered')}: ${getAnsweredCount()} / ${questions.length - 1}</p>
+              <p class="text-sm text-nordic-textSecondary">${t('answered')}: ${getAnsweredCount()} / ${questions.length}</p>
             </div>
           </div>
         </section>
@@ -665,18 +667,19 @@
     }
 
     function renderForm() {
-      const progressPct = ((questions.length - 1) / questions.length) * 100;
+      const progressPct = ((questions.length) / (questions.length + 1)) * 100;
       
-      const pills = questions.map((question, i) => {
-        const active = i === questions.length - 1;
-        const answered = i < questions.length - 1 ? !!state.answers[i] : false;
+      const pills = Array.from({ length: questions.length + 1 }).map((_, i) => {
+        const active = i === questions.length;
+        const answered = i < questions.length ? !!state.answers[i] : false;
+        const isFormPill = i === questions.length;
         
         let cls = '';
         if (active) cls = 'bg-brand-dark text-white border-brand-dark';
         else if (answered) cls = 'bg-brand-xlight text-brand-xdark border-brand-main';
         else cls = 'bg-white text-gray-400 border-gray-200';
 
-        const content = question.isForm ? icons.check : (i + 1);
+        const content = isFormPill ? icons.check : (i + 1);
 
         return `<button onclick="jumpToQuestion(${i})" class="w-7 h-7 rounded-full text-xs border flex items-center justify-center ${cls}">${content}</button>`;
       }).join('');
@@ -718,12 +721,12 @@
                 <textarea id="contact-message" rows="3" class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-brand-main"></textarea>
               </div>
 
-              <div class="rounded-xl bg-brand-xlight border border-brand-light p-4">
+              <div class="rounded-xl bg-gray-50 border border-gray-100 p-4">
                 <label for="privacy-consent" class="grid grid-cols-[auto_1fr] gap-3 text-sm text-nordic-textPrimary leading-relaxed cursor-pointer">
                   <input
                     id="privacy-consent"
                     type="checkbox"
-                    class="mt-1 h-4 w-4 rounded border-brand-main text-brand-xdark focus:ring-brand-dark cursor-pointer"
+                    class="mt-1 h-4 w-4 rounded border-gray-300 text-brand-dark focus:ring-brand-main cursor-pointer"
                     onchange="toggleSubmitButton()"
                     required
                   />
@@ -733,7 +736,7 @@
                       href="${privacyLink()}"
                       target="_blank"
                       rel="noopener noreferrer"
-                      class="text-brand-xdark font-medium underline hover:text-brand-dark"
+                      class="text-brand-xdark underline hover:text-brand-dark"
                     >${t('privacyLink')}</a>
                     <span>${t('privacyAfter')}</span>
                   </span>
@@ -813,7 +816,7 @@
       const msg = document.getElementById('contact-message').value || '-';
 
       // Gather answers
-      let answersText = questions.filter(q => !q.isForm).map((q, index) => {
+      let answersText = questions.map((q, index) => {
         const rawValue = state.answers[index];
         let answerStr = "Keine Antwort";
         if (rawValue !== undefined) {
